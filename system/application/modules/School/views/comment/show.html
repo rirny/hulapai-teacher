@@ -1,0 +1,92 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+});
+function reply(e){
+	var content = $(e).prev('.reply_content').val();
+	if(!content || content == '回复：'){
+		alert('回复内容不能为空');
+		return false;
+	}
+	var pid = $('#pid').val();
+	$.ajax({
+ 		type:"post",
+ 		url:"/school/comment/reply",
+ 		data:'id='+pid+'&content='+content+'&act=show',
+ 		success:function(data){
+ 			if(data == 1){
+			 	window.top.art.dialog({
+					id:'show_message',
+					content:'回复成功', 
+					title:'提示', 
+					lock:true
+				},function(){
+					location.reload();
+				});
+ 			}else{
+ 				alert(data)
+ 			}
+ 		}
+ 	});
+}
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<div id="event_info_other" style="margin:0;">
+	<div class="other_3" style="margin:0;">
+		<div class="comments">
+			<ul>
+				<li class="comment_2">
+					<span style="color:#333">{{studentName($teacherComment.student)}}</span>
+					<span class="link">{{$teacherComment.content}}
+					{{foreach $teacherComment.attachInfos as $attachInfo}}
+					<span class="attach link" link="{{$path.image}}{{$attachInfo.save_path}}{{$attachInfo.save_name}}">附件：{{$attachInfo.attach_name|truncate:15:"...":true}}</span>
+					{{/foreach}}
+					</span>
+					<span class="ccc">{{$teacherComment.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</span>
+					
+				</li>				
+			</ul>
+			{{foreach $comments as $comment}}
+			<ul>
+				<li class="avatar">{{imageUrl($comment.creator,1,50)}}</li>
+				<li class="comment">
+					<span class="mark"></span>
+					<span style="color:#333">{{if $comment.character =="teacher"|| $comment.character == "school"}}{{teacherName($comment.creator)}}(老师){{elseif $comment.character == "student"}}{{studentName($comment.student)}}{{relation($comment.creator,$comment.student)}}{{/if}}</span>
+					<span style="color:#999">{{$comment.content}}
+					{{foreach $comment.attachInfos as $attachInfo}}
+					<span class="attach link" link="{{$path.image}}{{$attachInfo.save_path}}{{$attachInfo.save_name}}">附件：{{$attachInfo.attach_name|truncate:15:"...":true}}</span>
+					{{/foreach}}
+					</span>
+					<span class="ccc">{{$comment.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</span>
+				</li>				
+			</ul>
+			{{/foreach}}
+			<span class="reply">
+				<input type="hidden" name="pid" id="pid" value="{{$teacherComment.id}}"/>
+				<input type="text" def='回复：' value="" class="input-text ufocus reply_content" name="content">
+				<input name="dosubmit" type="submit" value="回复" class="button state_highlight" style="width:60px;" onclick="reply(this)">
+			</span>
+		</div>
+		<div id="pages">{{$pages}}</div>
+	</div>
+</div>
+</div>
+</div>
+<script language="JavaScript">
+<!--
+$(".attach").click(function(){
+	var link = $(this).attr('link');
+	window.top.art.dialog({
+		id:'attach',
+		content:"<img src='"+link+"'/>", 
+		title:'查看附件', 	
+		lock:true
+	});
+});
+//-->
+</script>
+{{include "public/footer.html"}}

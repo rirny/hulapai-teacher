@@ -1,0 +1,51 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="text" name="remark" class="input-text ufocus" id="text" value="{{$_GET.remark}}" def="课程名称">
+			{{Html::date('start_date',$_GET.start_date,'起始日期')}}
+			{{Html::date('end_date',$_GET.end_date,'终止日期')}}
+			{{Html::selectCommented($_GET.commented, 'commented', 'commented','点评状态')}}
+			<input type="submit" value="搜索" class="button search" name="search">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+	<input type="hidden" name="pc_hash" value="bLHaEA">
+</form>
+<div class="table-list">
+<table width="100%" cellspacing="0" >
+	<thead>
+		<tr>
+			<th>课程名称</th>
+			<th>上课日期</th>
+			<th>上课时间</th>
+			<th>上课老师</th>
+			<th>状态</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $events as $event}}
+    <tr>
+		<td align="center"><a class="link" href="/student/event/info?id={{$event.event}}">{{$event.remark}}</a></td>
+		<td align="center">{{$event.start_date|date_format:'%Y-%m-%d'}}{{if $event.is_loop}}至{{$event.end_date|date_format:'%Y-%m-%d'}}{{/if}}</td>
+		<td align="center">{{$event.start_date|date_format:'%H:%M'}}至{{$event.end_date|date_format:'%H:%M'}}</td>
+		<td align="left">{{imageUrl($event.teacher,1,30)}}&nbsp;{{teacherName($event.teacher)}}</td>
+		<td align="center">		
+			{{if $event.courseCommented}}<span class="yellow">已点评</span>{{else}}<span>未点评</span>{{/if}}
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=6>暂无课程数据</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+<div id="pages">{{$pages}}</div>
+</div>
+</div>
+{{include "public/footer.html"}}

@@ -1,0 +1,58 @@
+{{include "public/header.html"}}
+<div class="pad_common" style="padding:0">
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">用户</th>
+			<th>内容</th>
+			<th>附件</th>
+			<th>点评时间</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $data as $_data}}
+    <tr>
+		<td align="left">{{if $_data.anonymous}}【匿名】{{else}}{{if $_data.character == "teacher" || $_data.character == "school"}}{{teacherName($_data.creator)}}(老师){{elseif $_data.character == "student"}}{{studentName($_data.student)}}{{relation($_data.creator,$_data.student)}}{{/if}}{{/if}}</td>
+		<td align="center" title="{{$_data.content}}">{{if $_data.pid}}[回复]{{/if}}{{$_data.content|truncate:30:"...":true}}</td>
+		<td align="center">
+		{{foreach $_data.attachInfos as $attachInfo}}
+		<span class="attach link" link="{{$path.image}}{{$attachInfo.save_path}}{{$attachInfo.save_name}}">{{$attachInfo.attach_name|truncate:15:"...":true}}</span>
+		{{/foreach}}
+		</td>
+		<td align="center">{{$_data.create_time}}</td>
+		<td align="center"><a href="javascript:reply({{$teacherComment.id}})">[回复]</a></td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=6>暂无点评数据</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+function reply(id){
+	window.top.art.dialog({
+		id:'reply',
+		iframe:'/school/comment/reply?id='+id, 
+		title:'点评回复', 
+		width:'500', 
+		height:'300', 
+		lock:true
+	});
+}
+$(".attach").click(function(){
+	var link = $(this).attr('link');
+	window.top.art.dialog({
+		id:'attach',
+		content:"<img src='"+link+"'/>", 
+		title:'查看附件', 	
+		lock:true
+	});
+});
+//-->
+</script>
+{{include "public/footer.html"}}

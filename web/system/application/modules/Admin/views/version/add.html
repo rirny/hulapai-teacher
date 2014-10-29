@@ -1,0 +1,81 @@
+{{include "public/header.html"}}
+<link href="{{$path.js}}uploadify/uploadify.css" rel="stylesheet" type="text/css" />
+<script src="{{$path.js}}uploadify/jquery.uploadify.min.js" language="javascript" type="text/javascript" ></script>
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#version").formValidator({onshow:"请输入版本号",onfocus:"版本号长度为1-10个字符"}).inputValidator({min:1,max:10,onerror:"版本号长度为1-10个字符"});
+	$(".packagetype").change(function(){
+		var id = $(this).val();
+		$(".packagetype_v").hide();
+		$("#packagetype_"+id).show();
+	})
+});
+//-->
+</script>
+<div class="pad-lr-10">
+<div class="common-form">
+<form name="myform" action="/admin/version/add" method="post" id="myform" enctype="multipart/form-data">
+	<table width="100%" class="table_form">
+		<tr>
+			<td width="120" align="right">来源：</td> 
+			<td>{{Html::select($sources,1, 'source', 'source','')}}
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">类型：</td> 
+			<td>{{Html::select($types,1, 'type', 'type','')}}
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">版本号：</td> 
+			<td><input type="text" name="version" class="input-text" id="version" value=""></input>
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">更新级别：</td> 
+			<td>{{Html::select($levels,0, 'level', 'level','')}}
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">大小：</td> 
+			<td><input type="text" name="size" class="input-text" id="size" value=""></input>MB
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">时间：</td> 
+			<td>{{Html::date('date')}}
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">上传类型：</td> 
+			<td><input type="radio" class="packagetype" name="packagetype" value="1" checked=checked/>安装包<input type="radio" name="packagetype" class="packagetype" value="2" />远程地址
+			</td>
+		</tr>
+		<tr id="packagetype_1" class="packagetype_v">
+			<td width="120" align="right">安装包：</td> 
+			<td>
+			<input type="file" name="upfile" id="upfile"></input>
+			</td>
+		</tr>
+		<tr style="display:none;"  id="packagetype_2" class="packagetype_v">
+			<td width="120" align="right">下载地址：</td> 
+			<td><input type="text" name="url" class="input-text" id="url" value="" size=50></input>
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">描述：</td> 
+			<td><textarea name="desc" id="desc" style="width:70%;height:120px;"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right"></td> 
+			<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+			</td>
+		</tr>
+	</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

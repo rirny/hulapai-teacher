@@ -1,0 +1,28 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/school/user/edit" method="post" id="myform">
+<table width="100%" class="table_form contentWrap">
+	<tr>
+		<td width="120" align="right">昵称：</td> 
+		<td>{{if $user.userInfo.firstname || $user.userInfo.lastname}}{{$user.userInfo.firstname}}{{$user.userInfo.lastname}}{{else}}{{$user.userInfo.nickname}}{{/if}}</td>
+	</tr>
+	<tr>
+		<td width="120" align="right">用户组：</td>
+		<td>
+			<select name="info[gid]">
+			{{foreach $groups as $group}}
+			<option value="{{$group.gid}}" {{if $group.gid==$user.gid}}selected{{/if}}>{{$group.name}}</option>
+			{{/foreach}}
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td><input type="hidden" name="id" value="{{$user.id}}"></input></td> 
+		<td><input name="dosubmit" type="submit" value="提交" class="button state_highlight"></td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

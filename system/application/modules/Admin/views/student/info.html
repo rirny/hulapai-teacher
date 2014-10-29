@@ -1,0 +1,51 @@
+{{include "public/header.html"}}
+<div class="pad-lr-10">
+<div class="common-form">
+	<table width="100%" class="table_form">
+		<tr>
+			<td width="150" valign="top">			
+				<table width="100%" class="table_form">
+				<tr>
+					<td>{{imageUrl($student.id,2,200)}}</td>
+				</tr>
+				
+				</table>
+			</td> 
+			<td width="*" valign="top">
+				<table width="100%" class="table_form list">
+					<tr>
+						<td width="80" align="right">姓名：</td> 
+						<td>&nbsp;&nbsp;&nbsp;&nbsp;{{$student.name}}</td> 								
+					</tr>
+					<tr>
+						<td width="80" align="right">加入时间：</td> 
+						<td>&nbsp;&nbsp;&nbsp;&nbsp;{{$student.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</td> 								
+					</tr>
+					<tr>
+						<td width="80" align="right">性别：</td> 
+						<td>&nbsp;&nbsp;&nbsp;&nbsp;{{if $student.gender == 1}}男{{elseif $student.gender == 2}}女{{else}}未知{{/if}}</td> 								
+					</tr>				
+								
+					<tr>
+						<td width="80" align="right">联系方式：</td>
+						<td>
+							<ul class="parentList">
+								{{foreach $parents as $parent}}
+								<li>
+									{{imageUrl($parent.id,1,30)}} 
+									<span>
+									{{$parent.nickname}}({{if $parent.relation == 1}}本人{{elseif $parent.relation == 2}}爸爸{{elseif $parent.relation == 3}}妈妈{{elseif $parent.relation == 4}}其他{{/if}}):{{$parent.account}}
+									</span>
+								</li>
+								{{/foreach}}
+							</ul>							
+						</td>
+					</tr>
+					
+				</table>
+			</td> 
+		</tr>
+	</table>
+</div>
+</div>
+{{include "public/footer.html"}}

@@ -1,0 +1,91 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="subnav">
+    <div class="content-menu ib-a link line-x">
+        <a class="add fb" href="javascript:add();"><em>添加教师组</em></a>
+    </div>
+</div>
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">分组名称</th>
+			<th>老师数</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $groups as $group}}
+    <tr>
+		<td align="left">{{$group.name}}</td>
+		<td align="center">{{$group.num}}</td>
+		<td align="center">	
+			<!--<a href="javascript:manage('{{$group.id}}')">[添加老师]</a>--> <A href="javascript:;" onclick="teacher('{{$group.id}}')" name="selectTeacher" num="0" type="button" id="selectTeacher">[添加老师]</A>
+			<a href="javascript:edit('{{$group.id}}')">[修改名称]</a>	
+			<a href="javascript:confirmurl('/school/group/delete?id={{$group.id}}', '是否删除?')">[删除]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=3>暂无分组</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+function add(){
+	window.top.art.dialog({
+		id:'add',
+		iframe:'/school/group/add', 
+		title:'添加教师组', 
+		width:'500', 
+		height:'130', 
+		lock:true
+	});
+}
+function edit(id){
+	window.top.art.dialog({
+		id:'edit',
+		iframe:'/school/group/edit?id='+id, 
+		title:'修改教师组', 
+		width:'500', 
+		height:'130', 
+		lock:true
+	});
+}
+function manage(id){
+	window.top.art.dialog({
+		id:'manage',
+		iframe:'/school/group_teacher/index?id='+id, 
+		title:'管理教师组', 
+		width:'700', 
+		height:'500', 
+		lock:true
+	});
+}
+
+function teacher(group){	
+	window.top.art.dialog({
+		id:"teacher",
+		iframe:"/public/selectTeacher?school={{$school}}&event=0&groupEdit=" + group, 
+		title:"选择老师", 
+		width:window.top.document.body.offsetWidth-100, 
+		height:window.top.document.body.offsetHeight-150,
+		lock:true
+	}, function(){
+		var d = window.top.art.dialog({
+			id:"teacher"
+		}).data.iframe;		
+		var form = d.document.getElementById("dosubmit");
+		form.click();
+		window.location.reload();
+		return false;		
+	}, function(){
+		window.top.art.dialog({id:"teacher"}).close();
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

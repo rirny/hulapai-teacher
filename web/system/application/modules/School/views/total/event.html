@@ -1,0 +1,58 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<p class="content_tip">注:以下数据为截止至{{date('Y-m-d',strtotime('-1 day'))}}为止的统计结果</p>
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			{{Html::select($schoolCourses,$_GET.course, 'course', 'course','授课内容')}}
+			<input type="text" name="text" class="input-text ufocus" id="text" value="{{$_GET.text}}" def="课程名称">
+			{{Html::select($teachers,$_GET.teacher, 'teacher', 'teacher','上课老师')}}
+			{{Html::date('start_date',$_GET.start_date,'起始日期')}}
+			{{Html::date('end_date',$_GET.end_date,'终止日期')}}
+			<input type="submit" value="搜索" class="button search" name="search">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+</form>
+<div class="table-list">
+<table width="100%" cellspacing="0" >
+	<thead>
+		<tr>
+			<th>授课内容</th>
+			<th>课程名称</th>
+			<th>上课日期</th>
+			<th>上课时间</th>
+			<th>上课老师</th>
+			<th>学生数</th>
+			<th>出勤</th>
+			<th>缺勤</th>
+			<th>请假</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $events as $event}}
+    <tr>
+		<td align="center">{{$event.courseName}}</td>
+		<td align="center">{{$event.text}}</td>
+		<td align="center">{{$event.start_date|date_format:'%Y-%m-%d'}}{{if $event.is_loop}}至{{$event.end_date|date_format:'%Y-%m-%d'}}{{/if}}</td>
+		<td align="center">{{$event.start_date|date_format:'%H:%M'}}~{{$event.end_date|date_format:'%H:%M'}}</td>
+		<td align="left">{{imageUrl($event.teacher,1,30)}}&nbsp;{{teacherName($event.teacher)}}</td>
+		<td align="center">{{$event.studentNum}}</td>
+		<td align="center">{{$event.attend}}</td>
+		<td align="center">{{$event.leave}}</td>
+		<td align="center">{{$event.absence}}</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=9>暂无记录</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+{{include "public/footer.html"}}

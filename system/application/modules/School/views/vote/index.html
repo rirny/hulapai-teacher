@@ -1,0 +1,88 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="subnav">
+    <div class="content-menu ib-a link line-x">
+        <a class="add fb" href="javascript:add();"><em>创建新问卷</em></a>   
+    </div>
+</div>
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="text" name="title" class="input-text ufocus" id="title" value="{{$_GET.title}}" def="问题">
+			<input type="submit" value="搜索" class="button search" name="search">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+</form>
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">问题</th>
+			<th>开始时间</th>
+			<th>结束时间</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $votes as $vote}}
+    <tr>
+		<td align="left" title="{{$vote.title}}">{{$vote.title|truncate:30:"...":true}}</td>
+		<td align="center">{{$vote.start_time|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+		<td align="center">{{$vote.end_time|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+		<td align="center">	
+			<a href="javascript:info('{{$vote.id}}',2)">[投票详情]</a>	
+			<a href="javascript:info('{{$vote.id}}',1)">[投票统计]</a>
+			<a href="/school/notify/send?type=2&vote={{$vote.id}}">[发问卷]</a>		
+			<a href="javascript:edit('{{$vote.id}}')">[修改]</a>	
+			<a href="javascript:confirmurl('/school/vote/delete?id={{$vote.id}}', '是否删除?')">[删除]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=4>暂无投票</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+<div id="pages">{{$pages}}</div>
+</div>
+</div>
+<script language="JavaScript">
+<!--
+function add(){
+	window.top.art.dialog({
+		id:'add',
+		iframe:'/school/vote/add', 
+		title:'新问卷', 
+		width:'750', 
+		height:'460', 
+		lock:true
+	});
+}
+function edit(id){
+	window.top.art.dialog({
+		id:'edit',
+		iframe:'/school/vote/edit?id='+id, 
+		title:'修改问卷', 
+		width:'750', 
+		height:'460', 
+		lock:true
+	});
+}
+function info(id,type){
+	window.top.art.dialog({
+		id:'info',
+		iframe:'/school/vote/info?id='+id+'&type='+type, 
+		title:'查看问卷', 
+		width:'500', 
+		height:type == 1 ? '200' : '500', 
+		lock:true
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

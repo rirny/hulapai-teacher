@@ -1,0 +1,83 @@
+{{include "public/header.html"}}
+<link href="{{$path.js}}uploadify/uploadify.css" rel="stylesheet" type="text/css" />
+<script src="{{$path.js}}uploadify/jquery.uploadify.min.js" language="javascript" type="text/javascript" ></script>
+<style>
+<!--
+.attachArea{width:110px;height:100px;display:block;margin:5px;float:left;}
+.attachArea span{position: relative; right: -98px;top: -105px;}
+.icon{width:16px; height:16px;display:inline-block; background:url('{{$path.images}}i_global.png') no-repeat -286px -32px;}
+-->
+</style>
+<div class="subnav">
+    <div class="content-menu ib-a blue line-x">
+        <a href="{{url('admin','feed','index')}}"><em>动态列表</em></a><span>|</span>
+        <a class="on" href="javascript:;"><em>发布官方动态</em></a>    
+    </div>
+</div>
+<script type="text/javascript">
+<!--
+	$(function(){
+		$.formValidator.initConfig({
+			formid:"myform",
+			autotip:true,
+			onerror:function(msg){}
+		});
+		$("#content").formValidator({onshow:"请输入内容",onfocus:"内容长度为10-150个字符"}).inputValidator({min:10,max:150,onerror:"内容长度为10-150个字符"});
+		var fls=flashChecker();
+		if(!fls.f){
+			$(".upfileArea").html("您的浏览器不支持flash,无法上传图片！")
+		}else{
+			$('#upfile').uploadify({
+				'formData'     : {
+					'timestamp' : '{{$timestamp}}',
+					'token'     : '{{$token}}',
+					'app'     : 'upload2',
+					'act'     : 'index',
+					'type'	  : 'feed'
+				},
+				'fileTypeExts':'*.jpg;*.jpeg;*.png;*.gif',
+				'fileSizeLimit':2048,
+				'buttonText':'上传',
+				'multi':true,
+				'uploadLimit' : 5,    
+				'swf'      : '{{$path.js}}uploadify/uploadify.swf',
+				'uploader' : '{{$path.api}}',
+				'onSelectError' : function (file, errorCode, errorMsg) {
+				   if (errorCode == SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT){
+				    alert('超过文件上传大小限制（2M）！');
+				    return;
+				   }
+				   alert(errorObj.type + ', Error: ' + errorObj.info);
+				},
+				'onUploadSuccess' : function(file, data, response) {
+					var data = jQuery.parseJSON(data);
+		         	if(data.state == 1){
+		         		var attach = '{{$path.image}}'+data.result.path;
+		         		$("#attachArea").append('<p class="attachArea"><input type="hidden" name="attach[]" id="attach" value="'+data.result._id+'"><img width=100 height=100 src="'+attach+'"><span><img onclick="$(this).parent().parent().remove();" class="delOption" src="{{$path.images}}hulapai/delete.png"/></span></p>');
+		         	}
+				 }
+			});
+		}
+	});
+//-->
+</script>
+<div class="common-form">
+<form name="myform" id="myform" action="{{url('admin','feed','add')}}" method="post">
+<table width="100%" class="table_form contentWrap">  
+	<tr>
+	  <td><textarea name="content" id="content" rows="6" cols="80"></textarea></td>
+	</tr>
+	<tr>
+		<td>
+			<input id="upfile" name="upfile" type="file">
+			<div id="attachArea"></div>		
+		</td>
+	</tr>
+</table>
+<!--table_form_off-->
+</div>
+    <div class="bk15"></div>
+	<div class="btn"><input type="submit" id="dosubmit" class="button" name="dosubmit" value="提交"/></div>
+</div>
+</form>
+{{include "public/footer.html"}}

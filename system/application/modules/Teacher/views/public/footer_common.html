@@ -1,0 +1,40 @@
+<script language="JavaScript">
+<!--
+$(".ufocus").focus(function(){
+	$(this).removeClass("ccc");
+	var def = $(this).attr("def");
+	var val = $(this).val();
+	if(val == def){
+		$(this).val("");
+	}
+}).focusout(function(){
+	$(this).removeClass("ccc");
+	var def = $(this).attr("def");
+	var val = $(this).val();
+	if(val == ""){
+		$(this).val(def).addClass("ccc");
+	}
+});
+$(".ufocus").each(function(){
+	if(!$(this).val()){
+		$(this).val($(this).attr("def")).addClass("ccc");
+	}else{
+		if($(this).val() == $(this).attr("def")){
+			$(this).addClass("ccc");
+		}else{
+			$(this).removeClass("ccc");
+		}
+	}
+});
+$(".checkAll").click(function(){
+	var v = $(this).attr("rel");
+	if($(this).attr("checked")){
+		$('input[name='+v+']').attr('checked', true);
+	}else{
+		$('input[name='+v+']').attr('checked', false);
+	}
+});
+//-->
+</script>
+</body>
+</html>

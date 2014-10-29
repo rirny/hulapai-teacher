@@ -1,0 +1,144 @@
+{{include "public/header.html"}}
+<style>
+<!--
+#parents_option{float: left;position: relative;left: -18px;}
+#parents_option p{display:block;margin:5px 0;}
+#parents_option p span{margin-left: 8px;}
+#parents_option .delOption{cursor: pointer;}
+#addOption{float: left;left: 425px;position: relative;top: 8px;cursor: pointer;}
+.parent_option{}
+body fieldset{margin-bottom:12px; padding:10px 40px; border:1px solid #EDEDED; border-radius: 3px;}
+body fieldset div{ line-height:38px;}
+body fieldset label{display:inline-block;width:80px;text-align:right;}
+.mbx{padding:0px 12px; line-height:30px;}
+.optionBnt{padding:0px 10px; height:24px;}
+
+.coursePanel{height:100%; min-height:30px; _height:30px; width:622px; border:1px solid #CCC; padding:6px 10px 0px; float:left; border-radius: 3px;}
+.coursePanel span{display:block;float:left; line-height:20px;padding:0px 0px 0px 8px;}
+.coursePanel span.courseSelected{border:1px solid #ff6600;margin:4px 6px;background:#fff0e1;cursor:pointer;border-radius: 2px;}
+.coursePanel span.courseSelected i{display:block; width:20px; height:20px; float:right; background:url('{{$path.images}}cross.png') 0px 6px no-repeat;}
+.coursePanel span.courseBtn{float:right;}
+.courseFormPanel{float:left;margin-left:8px; }
+.courseForm{display:none;}
+.courseBtn{ padding:4px 6px;}
+
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){},onsuccess:function(){
+		var phoneReg = /^(1)[0-9]{10}$/;
+		var error = 0;
+		var parentsArr = new Array();
+		var phoneArr = new Array();
+		var relationArr = new Array();		
+		if($(".parentItem").find("input[name='parents[mobile][]'][value!='']").length < 1){ alert("至少需要一个联系人及联系方式！"); return false;}
+		$(".parentItem").each(function(i){
+			var phoneObj = $(this).find("input[name='parents[mobile][]']");
+			var relationObj = $(this).find(":input[name='parents[relation][]']");
+			var nameObj = $(this).find("input[name='parents[name][]']");
+			var phone = $(phoneObj).val();
+			var relation = $(relationObj).val();
+			var name = $(nameObj).val();			
+			if(name == '' && phone == ''){$(this).remove(); return;}
+			if(name == '') {alert('联系人姓名为必填'); $(nameObj).css("border", "1px solid red");  error++; return false;}
+			if(phone == '' || !phone.match(phoneReg)) {alert('手机格式不正确'); $(phoneObj).css("border", "1px solid red"); error++;return false;}			
+			if(!phone.match(phoneReg)){alert('手机格式不正确'); $(phoneObj).css("border", "1px solid red"); error++; return false;}
+			if(!relation || (relation != 4 && $.inArray(relation, relationArr) != -1)){
+				alert("联系人与学生关系为必选，且本人、爸爸、妈妈关系只能有一个！"); 	$(this).css("border", "1px solid red"); error++; return false;
+			}
+			relationArr.push(relation);
+			$(this,nameObj,phoneObj).css("border", "0px solid red");			
+		});		
+		if(error) return false;
+		return true;		
+	}});
+	
+	$("#name").formValidator({onshow:"请输入学生名",onfocus:"学生名长度为2-20个字符"}).inputValidator({min:2,max:20,onerror:"学生名长度为2-20个字符"});
+
+	$(".optionBnt[name='add']").bind('click', function(){addParent($(this));});
+	$(".optionBnt[name='del']").bind('click', function(){delParent($(this))});
+	$("#courseAddBtn").bind('click', function(){$(".courseForm").show();$(this).hide();})
+	$("#addCourse").change(function(){
+		var course = $("#course").val();
+		var Name = $("#course option:selected").text();
+		if(course == ''){alert("请选择科目！"); return false};
+		if($("#coursePanel").find("input[value='" + course + "']").length > 0){alert("科目已存在！"); return false}
+		// if($.inArray(course, selectedCourse) != -1){alert("科目已存在！"); return false};
+		$("#course option:selected").remove();
+		$("#coursePanel").append("<span class=\"courseSelected\">" + Name + "<i></i><input type=\"hidden\" name=\"course[]\" value=\"" + course + "\" /></span>");
+		$("#coursePanel").find(".courseSelected").bind("click", function(){
+			var course = $(this).find("input").val();
+			var courseName = $(this).text();
+			$("#course").append('<option value="' + course + '">' + courseName + '</option>');
+			$(this).remove();
+		});
+	});
+});
+
+function addParent(obj)
+{
+	if($(".parentItem").length >= 3){alert('家长最多3个');	return false;}
+	var item = $(".parentItem:first").clone();
+	$(item).find('input[type="text"],select').val("");
+	$(item).find('input[name="add"]').bind('click', function(){addParent($(this));});
+	$(item).find('input[name="del"]').bind('click', function(){delParent($(this));});
+	$(obj).parent().after($(item));
+}
+
+function delParent(obj){if($(".parentItem").length < 2){alert("至少需要一个联系人！");return false}$(obj).parent().remove();}
+//-->
+</script>
+
+<div class="mbx">首页 > 学生管理 > 学生资源 > 添加资源</div>
+
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/school/student_resource/add" method="post" id="myform">
+<fieldset>
+	<legend>基本资料</legend>
+	<div>
+		<label>学生名：</label><input type="text" name="name"  class="input-text" id="name">
+	</div>
+	<div>
+		<label>性别：</label>{{Html::selectGender(1, 'gender', 'gender','')}}
+		<label>生日：</label>{{Html::date('birthday')}}		
+	</div>	
+	<div>		
+		<label>来源：</label>{{Html::selectStudentResource('', 'source', 'source','')}}
+	</div>	
+</fieldset>
+
+<fieldset class="parent">
+	<legend>联系人</legend>
+	<div class="parentItem">
+		<label>姓名：</label><input type="text" name="parents[name][]"  class="input-text parent_option" />
+		<label>手机：</label><input type="text" name="parents[mobile][]"  class="input-text parent_option"/>
+		{{Html::selectRelation(0, 'parents[relation][]', '','关系')}}
+		&nbsp;&nbsp;
+		<input type="button" value="删除" class="optionBnt" name="del" />
+		<input type="button" value="添加" class="optionBnt" name="add" />
+	</div>
+</fieldset>
+
+<fieldset class="course">
+	<legend>意向科目</legend>
+	<div class="coursePanel" id="coursePanel"></div>
+	<div class="courseFormPanel">
+		<div class="courseForm" id="addCourse">{{Html::select($schoolCourses,'', 'courseSelected', 'course')}}</div>
+		<input type="button" class="courseBtn" id="courseAddBtn" value="点击添加" />
+	</div>
+</fieldset>	
+
+<fieldset class="course">
+	<legend>备注</legend>
+	<textarea name="desc" rows="4" cols="102"></textarea>
+</fieldset>	
+
+
+<input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight"> <input name="reback" type="button" id="reback" value="返回" class="button">
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

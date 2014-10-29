@@ -1,0 +1,70 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="subnav">
+    <div class="content-menu ib-a link line-x">
+        <a class="add fb" href="javascript:add();"><em>添加管理员</em></a>   
+    </div>
+</div>
+<p class="content_tip">注:管理员分配管理员组后,拥有该管理员组的所有权限</p>
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">UID</th>
+			<th>用户名</th>
+			<th>用户组</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $users as $k=>$user}}
+    <tr>
+		<td align="left">{{$user.uid}}</td>
+		<td align="center">{{if $user.userInfo.firstname || $user.userInfo.lastname}}{{$user.userInfo.firstname}}{{$user.userInfo.lastname}}{{else}}{{$user.userInfo.nickname}}{{/if}}</td>
+		<td align="center">{{$user.group}}</td>
+		<td align="center">
+			<a href="javascript:enable({{$user.id}},'{{if $user.userInfo.firstname || $user.userInfo.lastname}}{{$user.userInfo.firstname}}{{$user.userInfo.lastname}}{{else}}{{$user.userInfo.nickname}}{{/if}}')">[权限设置]</a> | 
+			<a href="javascript:edit({{$user.id}},'{{if $user.userInfo.firstname || $user.userInfo.lastname}}{{$user.userInfo.firstname}}{{$user.userInfo.lastname}}{{else}}{{$user.userInfo.nickname}}{{/if}}')">[修改]</a> | 		
+			<a href="javascript:confirmurl('/school/user/delete?id={{$user.id}}', '是否删除?')">[删除]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=4>暂无管理员</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+<div id="pages">{{$pages}}</div>
+</div>
+</div>
+<script language="JavaScript">
+<!--
+function add() {
+	window.top.art.dialog({
+		title:'添加管理员',
+		id:'add',
+		iframe:'/school/user/add',
+		width:'500',
+		height:'150'
+	});
+}
+function edit(id, name) {
+	window.top.art.dialog({
+		title:'修改管理员《'+name+'》',
+		id:'edit',
+		iframe:'/school/user/edit?id='+id,
+		width:'500',
+		height:'150'
+	});
+}
+function enable(id, name) {
+	window.top.art.dialog({
+		title:'权限设置《'+name+'》',
+		id:'enable',
+		iframe:'/school/user/enable?id='+id,
+		width:'700',
+		height:'500'
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

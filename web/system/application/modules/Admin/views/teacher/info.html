@@ -1,0 +1,35 @@
+{{include "public/header.html"}}
+<div class="pad-lr-10">
+<div class="common-form">
+	<table width="100%" height="120" class="table_form">
+		<tr>
+			<td width="150">{{imageUrl($teacher.userInfo.id,1,200)}}</td>			
+			<td width="*">
+				<table width="100%" height="100%" class="table_form list">
+					<tr>
+						<td width="80" align="right">姓名：</td> 
+						<td>&nbsp;&nbsp;&nbsp;&nbsp;{{$teacher.userInfo.firstname}}{{$teacher.userInfo.lastname}}（{{$teacher.userInfo.hulaid}}）</td> 								
+					</tr>
+					<tr>
+						<td width="80" align="right">生日：</td> 
+						<td>&nbsp;&nbsp;&nbsp;&nbsp;{{if $teacher.userInfo.birthday}}{{$teacher.userInfo.birthday}}{{else}}未知{{/if}}</td> 								
+					</tr>
+					<tr>
+						<td width="80" align="right">性别：</td> 
+						<td>&nbsp;&nbsp;&nbsp;&nbsp;{{if $teacher.userInfo.gender == 1}}男{{elseif $teacher.userInfo.gender == 2}}女{{else}}未知{{/if}}</td> 								
+					</tr>
+					<tr>
+						<td width="80" align="right">地址：</td> 
+						<td>&nbsp;&nbsp;&nbsp;&nbsp;{{Html::getArea($teacher.province,$teacher.city,$teacher.area)}}&nbsp;&nbsp;{{$teacher.address}}</td> 								
+					</tr>
+					<tr>
+						<td width="80" align="right">联系方式：</td> 
+						<td>&nbsp;&nbsp;&nbsp;&nbsp;{{$teacher.userInfo.account}}</td> 								
+					</tr>	
+				</table>
+			</td> 
+		</tr>
+	</table>
+</div>
+</div>
+{{include "public/footer.html"}}

@@ -1,0 +1,33 @@
+{{include "public/header.html"}}
+<div class="subnav">
+    <div class="content-menu ib-a blue line-x"> 
+        <a href="/admin/user/index"><em>管理用户</em></a><span>|</span>
+        <a href="/admin/user/add"><em>添加用户</em></a>  
+    </div>
+</div>
+<div class="pad_10">
+<div class="common-form">
+<form name="myform" action="/admin/user/edit" method="post" id="myform">
+<table width="100%" class="table_form contentWrap">
+<tr>
+<td width="80">昵称</td> 
+<td>{{$user.nickname}}</td>
+</tr>
+<tr>
+<td>用户组</td>
+<td>
+<select name="info[gid]">
+{{foreach $groups as $group}}
+<option value="{{$group.gid}}" {{if $group.gid==$user.gid}}selected{{/if}}>{{$group.name}}</option>
+{{/foreach}}
+</select>
+</td>
+</tr>
+</table>
+    <div class="bk15"></div>
+    <input type="hidden" name="id" value="{{$user.id}}"></input>
+    <input name="dosubmit" type="submit" value="提交" class="button">
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

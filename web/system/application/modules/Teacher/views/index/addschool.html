@@ -1,0 +1,48 @@
+{{include "public/header_common.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#code").formValidator({
+		onshow:"请输入机构号",
+		onfocus:"请输入机构号"
+	}).inputValidator({
+		min:2,
+		max:15,
+		onerror:"请输入机构号"
+	}).ajaxValidator({
+	    type : "get",
+		url : "/public/schoolExist",
+		data :"",
+		datatype : "html",
+		async:'false',
+		success : function(data){	
+            if( data == "1" ) {
+                return true;
+			} else {
+                return false;
+			}
+		},
+		buttons: $("#dosubmit"),
+		onerror : "机构号不存在",
+		onwait : "检测中"
+	});
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/teacher/index/addSchool" method="post" id="myform">
+<table width="100%" class="table_form">
+	<tr>
+		<td><input type="text" name="code"  class="input-text ufocus" id="code" def="请输入机构号">
+	</tr>
+	<tr>
+		<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+		</td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer_common.html"}}

@@ -1,0 +1,53 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="subnav">
+    <div class="content-menu ib-a link line-x">
+        <a class="add fb" href="javascript:add({{$id}});"><em>添加学生</em></a>   
+    </div>
+</div>
+<div class="table-list">
+<form name="myform" action="/school/grade_student/delete" method="post" id="myform">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left"><input type="checkbox" value="" name="checkAll" class="checkAll" rel="student[]"/></th>
+			<th align="left">学生名</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $students as $student}}
+    <tr>
+		<td align="left"><input type="checkbox" value="{{$student.student}}" name="student[]"/></td>
+		<td align="left">{{$student.name}}</td>
+		<td align="center">	
+			<a href="javascript:confirmurl('/school/grade_student/delete?id={{$id}}&student={{$student.student}}', '是否删除?')">[删除]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=3>暂无班级学生</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+<div class="bk15"></div>
+	<input type="hidden" name="id" value="{{$id}}"/>
+    <input name="dosubmit" type="submit" value="删除" class="button">
+</form>
+<div id="pages">{{$pages}}</div>
+</div>
+</div>
+<script language="JavaScript">
+<!--
+function add(id){
+	window.top.art.dialog({
+		id:'add',
+		iframe:'/school/grade_student/add?id='+id, 
+		title:'添加学生', 
+		width:'700', 
+		height:'500', 
+		lock:true
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

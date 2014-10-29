@@ -1,0 +1,31 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#authCode").formValidator({onshow:"请输入授权码",onfocus:"授权码长度为5-20位字符"}).inputValidator({min:5,max:20,onerror:"授权码长度为5-20位字符"});
+});
+//-->
+</script>
+<div class="subnav">
+    <div class="content-menu ib-a blue line-x"> 
+        <a href="{{url('admin','authcode','index')}}"><em>管理授权码</em></a><span>|</span>
+        <a href="{{url('admin','authcode','add')}}"><em>添加授权码</em></a>  
+    </div>
+</div>
+<div class="pad_10">
+<div class="common-form">
+<form name="myform" action="/admin/authcode/edit" method="post" id="myform">
+<table width="100%" class="table_form contentWrap">
+<tr>
+<td>授权码</td> 
+<td><input type="text" name="authCode" class="input-text" id="authCode" value="{{$info.authCode}}"></input></td>
+</tr>
+</table>
+    <div class="bk15"></div>
+    <input type="hidden" name="id" class="input-text" value="{{$info.id}}"></input>
+    <input id="dosubmit" name="dosubmit" type="submit" value="提交" class="button">
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

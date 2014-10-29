@@ -1,0 +1,161 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+<!--
+function startDateWeek(type){
+	//日期到周
+	if(type == 1){
+		var start_date = $("#start_date").val();
+		if(!start_date){
+			return false;
+		}
+		start_date = new Date(Date.parse(start_date.replace(/-/g, "/")));
+		var week = start_date.getDay();
+		$("#week option:[value="+week+"]").attr("selected",true);
+	//周到日期
+	}else if(type == 2){
+		var week = parseInt($("#week").val());
+		if(week < 0){
+			return false;
+		}
+		var start_date = $("#bak_start_date").val();
+		if(!start_date){
+			start_date = new Date();
+			var year = start_date.getFullYear();
+			var month = start_date.getMonth()+1;
+			month = month >= 10 ? month : '0'+month;
+			var date = start_date.getDate();
+			date = date >= 10 ? date : '0'+date;
+			$("#bak_start_date").val(year+'-'+month+'-'+date);
+		}else{
+			start_date = new Date(Date.parse(start_date.replace(/-/g, "/")));
+		}
+		var w = parseInt(start_date.getDay());
+		if(week > w){
+			start_date.setDate(start_date.getDate()+(week-w));
+		}else if(week < w){
+			start_date.setDate(start_date.getDate()+(7 - w + week));
+		}
+		var year = start_date.getFullYear();
+		var month = start_date.getMonth()+1;
+		month = month >= 10 ? month : '0'+month;
+		var date = start_date.getDate();
+		date = date >= 10 ? date : '0'+date;
+		$("#start_date").val(year+'-'+month+'-'+date);
+	}
+}
+function checkFrom(whole){
+	if(whole != 0 && whole != 1){
+		alert('参数错误');
+		return false;
+	}
+	document.myform.whole.value=whole;
+	return true;
+}
+
+function clearNoNum(val, elem){   
+	//先把非数字的都替换掉，除了数字和.
+	val = val.replace(/[^\d.]/g,"");
+	//必须保证第一个为数字而不是.
+	val = val.replace(/^\./g,"");
+	//保证只有出现一个.而没有多个.
+	val = val.replace(/\.{2,}/g,".");
+	//保证.只出现一次，而不能出现两次以上
+	val = val.replace(".","$#$").replace(/\./g,"").replace("$#$",".");
+	//只能输入1个小数
+	val = val.replace(/^(\d+)\.(\d).*$/,'$1.$2');
+	if(!val || val > 10 || val < 0){
+		alert("课时必须在1-10之间,最多带一位小数");
+		return false;
+	}
+	$(elem).val(val);
+	return true;
+}
+
+$(function(){
+	startDateWeek(1);
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#course").formValidator({onshow:"请选择课程分类",onfocus:"请选择课程分类"}).inputValidator({min:1,onerror:"请选择课程分类"});
+	$("#start_hour").formValidator({onshow:"请选择开始时间",onfocus:"请选择开始时间"}).inputValidator({type:"number",min:1,max:24,onerror:"请选择开始时间"});
+	$("#end_hour").formValidator({onshow:"请选择结束时间",onfocus:"请选择结束时间"}).inputValidator({type:"number",min:1,max:24,onerror:"请选择结束时间"});
+	$("#text").formValidator({onshow:"请输入标题",onfocus:"标题长度为2-20个字符"}).inputValidator({min:2,max:20,onerror:"标题长度为2-20个字符"});
+	$("#num").formValidator({onshow:"请输入课程总次数",onfocus:"课程总次数必须在1-100之间"}).inputValidator({type:"number",min:1,max:100,onerror:"课程总次数必须在1-100之间"});
+	$("#class_time").formValidator({onshow:"请输入课时",onfocus:"课时必须在1-10之间,最多带一位小数"}).functionValidator({fun: clearNoNum});;
+	$("#selectTeacher").formValidator({onshow:"请选择老师并设置权限",onfocus:"请选择老师并设置权限"}).functionValidator({fun:function(){
+        if($(".select_teacher_op").length < 1){
+			return '请选择老师并设置权限';
+		}
+		return true;
+    }});
+    $("#selectStudent").formValidator({onshow:"请选择学生",onfocus:"请选择学生"}).functionValidator({fun:function(){
+        if($(".select_student_op").length < 1){
+			return '请选择学生';
+		}
+		return true;
+    }});
+	$("#course").change(function(){
+		var i = $(this).val();
+		if(i) $("#text").val($("#course option[value="+i+"]").text());
+	});
+});
+
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/school/event/pedit" method="post" id="myform">
+<table width="100%" class="table_form">
+	<tr>
+		<td width=120 align="right">授课内容：</td> 
+		<td>{{Html::select($schoolCourses,$eventInfo.course, 'course', 'course')}}
+		</td>
+	</tr>
+	<tr>
+		<td width=120 align="right">课程名称：</td> 
+		<td><input type="text" name="text"  class="input-text" id="text" value="{{$eventInfo.text}}">
+		</td>
+	</tr>
+	<tr>
+		<td width=120 align="right">时间：</td> 
+		<td>
+			{{Html::selectHour($eventInfo.start_date|date_format:'%H','start_hour','start_hour')}}：{{Html::selectMinute($eventInfo.start_date|date_format:'%M','start_minute','start_minute')}}&nbsp;至&nbsp;{{Html::selectHour($eventInfo.end_date|date_format:'%H','end_hour','end_hour')}}：{{Html::selectMinute($eventInfo.end_date|date_format:'%M','end_minute','end_minute')}}
+		</td>
+	</tr>
+	<tr>
+		<td width=120 align="right">课时：</td> 
+		<td><input type="text" name="class_time" class="input-text" id="class_time" size=5 value="{{$eventInfo.class_time}}">
+		</td>
+	</tr>
+	<tr>
+		<td width=120 align="right">老师设置：</td> 
+		<td>
+			{{Html::selectTeacher($school,$event,1,$courseTeachers)}}
+		</td>
+	</tr>
+	<tr>
+		<td width=120 align="right">学员设置：</td> 
+		<td>
+			{{Html::selectStudent($school,$event,$courseStudents)}}
+		</td>
+	</tr>
+	<tr>
+		<td width=120 align="right">颜色设置：</td> 
+		<td>{{Html::eventColor($eventInfo.color,'color')}}
+		</td>
+	</tr>
+	<tr>
+		<td width=120 align="right">
+			<input type="hidden" name="id" value="{{$eventInfo.id}}"/>
+			<input type="hidden" id="grade" name="grade" value="{{$eventInfo.grade}}"/>
+			{{foreach $ids as $id}}
+				<input type="hidden" name="ids[]" value="{{$id}}"/>
+			{{/foreach}}
+		</td> 
+		<td>
+			<input name="dosubmit" type="submit" value="修改" class="button state_highlight">
+		</td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

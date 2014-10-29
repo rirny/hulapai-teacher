@@ -1,0 +1,57 @@
+{{include "public/header.html"}}
+<div class="pad-lr-10">
+<div class="subnav">
+    
+</div>
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="text" name="studentName" class="input-text ufocus" id="studentName" value="{{$_GET.studentName}}" def="学生名">
+			{{Html::selectStatus($_GET.status, 'status', 'status','状态')}}
+			<input type="submit" value="搜索" class="button search" name="search">
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+</form>
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">学生名</th>
+			<th align="left">加入时间</th>
+			<th align="left">状态</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $students as $student}}
+    <tr>
+		<td align="left"><a href="javascript:info({{$student.id}},'{{$student.name}}')" class="link">{{imageUrl($student.id,2,30)}}&nbsp;{{$student.name}}</a></td>
+		<td align="left">{{$student.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+		<td align="left">{{if $student.status == 2}}冻结{{elseif $student.status == 1}}删除{{elseif $student.status == 0}}正常{{/if}}</td>
+		
+    </tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+function info(student,name){
+	window.top.art.dialog({
+		id:'info',
+		iframe:'/admin/student/info?student='+student, 
+		title:'学生详情《'+name+'》', 
+		width:'580', 
+		height:'380',
+		lock:true
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

@@ -1,0 +1,54 @@
+{{if !$wap}}
+{{include "public/header_index.html"}}
+<div id="content" class="contenter">
+	<center>
+	<div class="site_common_other_div">
+    	<p class="qa"><span>官方下载</span></a></p>
+		<ul class="list lh24 f14 download" style="border-bottom:1px solid #ccc;">
+			<li class="download_icon"></li>
+			<li class="download_desc"><ul>
+				<li class="name">呼啦派</li>
+				<li>大小：{{$info.size}}MB</li>
+				<li>版本：{{$info.version}}</li>
+				<li>系统要求：Android2.1及以上</li>
+				<li>更新时间：{{$info.date}}</li>
+			</ul></li>
+			<li class="download_link" onclick="javascript:location.href='/download?version={{$info.version}}&source={{$info.source}}'"></li>
+        </ul>
+        <ul class="list lh24 f14 p_desc">
+			<li class="name">产品介绍：</li>
+			<li class="desc"><ul>
+				<li>呼啦派是国内首款老师和学生家长（也可以是成年学生）之间双向交流的教学辅助工具软件。
+	师生双方通过建立“关联”，老师可以在这个平台上轻松实现教学管理的大部分功能并自动推送给学生家长。如：建课，考勤，教学点评，事件通知等等；而家长也可以及时反馈意见，与老师就学生的学习情况及时交互。</li>
+				<li>微博广场和个人空间是与他人分享学习与成长的社交平台。无论您是想做公益活动的老师，还是热心分享资源的爱心妈妈，或是视学习为生命的上进青年，这里都是一个专门为您打造的绿色生态圈。</li>
+        	</ul></li>
+        </ul>
+	</div>
+</center>
+</div>
+{{include "public/footer.html"}}
+{{else}}
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>呼啦派</title>
+</head>
+<body>
+<center>
+<div id="content" style="font-size:100px;line-height:100px;">
+<a href="/download?version={{$info.version}}&source={{$info.source}}">apk下载</a>&nbsp;&nbsp;&nbsp;
+<a href="https://itunes.apple.com/cn/app/hu-la-pai/id664444914?mt=8">ios下载</a>
+</div>
+</center>
+</body>
+<script type="text/javascript"> 
+
+window.onresize = function(){
+	var height = window.screen.availHeight;
+	document.getElementById("content").style.marginTop = parseInt(height/2) -200 + "px";
+}
+window.onresize();
+
+</script>
+</html>
+{{/if}}

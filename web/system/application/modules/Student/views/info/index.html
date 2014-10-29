@@ -1,0 +1,91 @@
+{{include "public/header.html"}}
+<link href="{{$path.js}}uploadify/uploadify.css" rel="stylesheet" type="text/css" />
+<script src="{{$path.js}}uploadify/jquery.uploadify.min.js" language="javascript" type="text/javascript" ></script>
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#name").formValidator({onshow:"请输入姓名",onfocus:"姓名长度为2-10个字符"}).inputValidator({min:2,max:10,onerror:"姓名长度为2-10个字符"});
+	var fls=flashChecker();
+	if(!fls.f){
+		$(".upfileArea").html("您的浏览器不支持flash,无法上传图片！")
+	}else{
+		$('#upfile').uploadify({
+			'formData'     : {
+				'timestamp' : '{{$timestamp}}',
+				'token'     : '{{$token}}',
+				'app'     : 'upload2',
+				'act'     : 'index',
+				'type'	  : 'student',
+				'uid'  : '{{$uid}}',
+				'student'  : '{{$student.id}}'
+			},
+			
+			'fileTypeExts':'*.jpg;*.jpeg;*.png;*.gif',
+			'fileSizeLimit':2048,
+			'buttonText':'上传',
+			'multi':false,
+			'swf'      : '{{$path.js}}uploadify/uploadify.swf',
+			'uploader' : '{{$path.api}}',
+			'onSelectError' : function (file, errorCode, errorMsg) {
+			   if (errorCode == SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT){
+			    alert('超过文件上传大小限制（2M）！');
+			    return;
+			   }
+			   alert(errorObj.type + ', Error: ' + errorObj.info);
+			},
+			'onUploadSuccess' : function(file, data, response) {
+	         	var data = jQuery.parseJSON(data);
+	         	if(data.state == 1){
+	         		var avatar = '{{$path.avatar}}'+data.result.student_avatar;
+	         		$("#avaterArea").attr('src',avatar);
+	         	}
+	         }
+		});
+	}
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/student/info/index" method="post" id="myform" enctype="multipart/form-data">
+<table width="100%" class="table_form contentWrap">
+	<tr>
+	<td width=80 align="right">头像：</td> 
+	<td>
+	<img id="avaterArea" src="{{imageUrl($student.id,2,50,false)}}" width="50" height="50">
+	<div class="upfileArea" style="left: 50px;position: relative;top: -50px;"><input id="upfile" name="upfile" type="file"></div>
+	<p class="content_tip">注：支持jpg,jpeg,png,gif格式的图片，大小不超过2M</p>
+	</td>
+	</tr>
+	<tr>
+	<td width=80 align="right">姓名：</td> 
+	<td><input type="text" name="name" class="input-text ufocus" id="name" value="{{$student.name}}" size=10 def="姓名"></input></td>
+	</tr>
+	<tr>
+	<td width=80 align="right">关系：</td> 
+	<td>
+	{{Html::selectRelation($student.relation,"relation","relation","")}}
+	</td>
+	</tr>
+	<tr>
+	<td width=80 align="right">性别：</td> 
+	<td>
+	{{Html::selectGender($student.gender,"gender","gender","未知")}}
+	</td>
+	</tr>
+	<tr>
+	<td width=80 align="right">生日：</td> 
+	<td>
+	{{Html::date('birthday',$student.birthday|date_format:'%Y-%m-%d','',0,0,true,1,true)}}
+	</td>
+	</tr>
+	<tr>
+	<td></td> 
+	<td><input name="dosubmit" type="submit" value="提交" class="button state_highlight"></td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

@@ -1,0 +1,66 @@
+{{include "public/header.html"}}
+<link href="{{$path.js}}uploadify/uploadify.css" rel="stylesheet" type="text/css" />
+<script src="{{$path.js}}uploadify/jquery.uploadify.min.js" language="javascript" type="text/javascript" ></script>
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#version").formValidator({onshow:"请输入版本号",onfocus:"版本号长度为1-10个字符"}).inputValidator({min:1,max:10,onerror:"版本号长度为1-10个字符"});
+	$("#url").formValidator({onshow:"请输入下载地址",onfocus:"下载地址长度为2-1000个字符"}).inputValidator({min:2,max:1000,onerror:"下载地址长度为2-1000个字符"});
+});
+//-->
+</script>
+<div class="pad-lr-10">
+<div class="common-form">
+<form name="myform" action="/admin/version/edit" method="post" id="myform">
+	<table width="100%" class="table_form">
+		<tr>
+			<td width="120" align="right">来源：</td> 
+			<td>{{Html::select($sources,$version.source, 'source', 'source','')}}
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">类型：</td> 
+			<td>{{Html::select($types,$version.type, 'type', 'type','')}}
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">版本号：</td> 
+			<td><input type="text" name="version" class="input-text" id="version" value="{{$version.version}}"></input>
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">更新级别：</td> 
+			<td>{{Html::select($levels,$version.level, 'level', 'level','')}}
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">大小：</td> 
+			<td><input type="text" name="size" class="input-text" id="size" value="{{$version.size}}"></input>MB
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">时间：</td> 
+			<td>{{Html::date('date',$version.date)}}
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">下载地址：</td> 
+			<td><input type="text" name="url" class="input-text" id="url" value="{{$version.url}}" size=50></input>
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right">描述：</td> 
+			<td><textarea name="desc" id="desc" style="width:70%;height:120px;">{{$version.desc}}</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td width="120" align="right"><input type="hidden" name="id" value="{{$version.id}}"></td> 
+			<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+			</td>
+		</tr>
+	</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

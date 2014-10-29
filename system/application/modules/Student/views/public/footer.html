@@ -1,0 +1,83 @@
+</div>
+<div class="footer">
+    <div class="link cut_line">
+    	<a href="{{$path.domain}}index/about" target="_blank">关于呼啦派</a><span>|</span><a href="{{$path.domain}}weibo" target="_blank">官方微博</a><span>|</span><a href="{{$path.domain}}index/job" target="_blank">诚征英才</a><span>|</span><a href="{{$path.domain}}index/connect" target="_blank">联系我们</a>
+	</div>
+	<div class="copy_right">2012-2013 Hulapai Co.ltd. All Rights Reserved</div>
+</div>
+<script type="text/javascript"> 
+//站点下拉菜单
+$(function(){
+	$("#nav_ts li").mouseover(function(){
+		$(this).children('.subs').show();
+	}).mouseout(function(){
+		$(this).children('.subs').hide();
+	});
+})
+//机构选择
+function school_select(id,name) {
+	$(".tab_web").html(name);
+	$.get("/student/index/selectSchool?school="+id,function(data){
+		if (data==1){
+			window.top.location.reload();
+		}
+	});
+	$('.subs').hide();
+}
+
+//添加机构
+function school_add() {
+	window.top.art.dialog({
+		id:'school_add',
+		iframe:'/student/index/addSchool', 
+		title:'添加机构', 
+		width:'400', 
+		height:'150', 
+		lock:true
+	});
+}
+
+
+//clientHeight-0; 空白值 iframe自适应高度
+function windowW(){
+	if($(window).width()<980){
+			$('.header_top').css('width',980+'px');
+			$('.header').css('width',980+'px');
+			$('#content').css('width',980+'px');
+			//$('.footer').css('width',980+'px');
+			$('body').attr('scroll','');
+			$('body').css('overflow','');
+	}
+}
+windowW();
+$(window).resize(function(){
+	if($(window).width()<980){
+		windowW();
+	}else{
+		$('.header_top').css('width','auto');
+		$('.header').css('width','auto');
+		$('#content').css('width',980+'px');
+		//$('.footer').css('width','auto');
+		$('body').attr('scroll','no');
+		$('body').css('overflow','hidden');
+		
+	}
+});
+
+AdjustHeight();
+function AdjustHeight()
+{
+   var heightLeft = $('.left_menu_ts').get(0).offsetHeight;
+   var heightRight = $('#content').get(0).offsetHeight-26;
+   if(heightRight < WINHEIGHT){
+   		heightRight = WINHEIGHT;
+   		$('#content').height(heightRight+26);
+   }
+   if (heightLeft > heightRight){
+       $('#content').height(heightLeft);
+   }else{
+       $('.left_menu_ts').height(heightRight);
+   }
+}  
+</script>
+{{include "public/footer_common.html"}} 

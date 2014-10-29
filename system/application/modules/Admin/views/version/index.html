@@ -1,0 +1,93 @@
+{{include "public/header.html"}}
+<div class="subnav">
+    <div class="content-menu ib-a link line-x">
+        <a class="add fb" href="javascript:add();"><em>添加版本</em></a>   
+    </div>
+</div>
+<div class="pad-lr-10">
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			{{Html::select($sources,$_GET.source, 'source', 'source','来源')}}
+			{{Html::select($types,$_GET.type, 'type', 'type','类型')}}
+			{{Html::select($levels,$_GET.level, 'level', 'level')}}
+			<input type="submit" value="搜索" class="button search" name="search">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+</form>
+<div class="table-list">
+<form name="myform" action="/admin/version/delete" method="post" id="myform">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left"><input type="checkbox" value="" name="checkAll" class="checkAll" rel="id[]"/></th>
+			<th>ID</th>
+			<th>来源</th>
+			<th>类型</th>
+			<th>版本号</th>
+			<th>更新级别</th>
+			<th>大小</th>
+			<th>时间</th>
+			<th>下载地址</th>
+			<th>描述</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $versions as $version}}
+    <tr>
+		<td align="left"><input type="checkbox" value="{{$version.id}}" name="id[]"/></td>
+		<td align="center">{{$version.id}}</td>
+		<td align="center">{{$sources[$version.source]}}</td>
+		<td align="center">{{$types[$version.type]}}</td>
+		<td align="center">{{$version.version}}</td>
+		<td align="center">{{if $version.level == 1}}强制{{else}}可选{{/if}}</td>
+		<td align="center">{{$version.size}}MB</td>
+		<td align="center">{{$version.date}}</td>
+		<td align="center">{{$version.url}}</td>
+		<td align="center">{{$version.desc}}</td>
+		<td align="center">	
+			<a href="javascript:edit('{{$version.id}}')">[修改]</a>	
+			<a href="javascript:confirmurl('/admin/version/delete?id={{$version.id}}', '是否删除?')">[删除]</a>
+		</td>
+    </tr>
+{{/foreach}}
+</tbody>
+</table>
+    <div class="bk15"></div>
+    <input name="dosubmit" type="submit" value="删除" class="button">
+</form>
+<div id="pages">{{$pages}}</div>
+</div>
+</div>
+<script language="JavaScript">
+<!--
+function add(){
+	window.top.art.dialog({
+		id:'add',
+		iframe:'/admin/version/add', 
+		title:'新版本', 
+		width:'700', 
+		height:'400', 
+		lock:true
+	});
+}
+function edit(id){
+	window.top.art.dialog({
+		id:'edit',
+		iframe:'/admin/version/edit?id='+id, 
+		title:'修改版本', 
+		width:'700', 
+		height:'400', 
+		lock:true
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

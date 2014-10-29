@@ -1,0 +1,87 @@
+{{include "public/header_common.html"}}
+<link href="{{$path.js}}uploadify/uploadify.css" rel="stylesheet" type="text/css" />
+<script src="{{$path.js}}uploadify/jquery.uploadify.min.js" language="javascript" type="text/javascript" ></script>
+<style>
+<!--
+.attachArea{width:110px;height:100px;display:block;margin:5px;float:left;}
+.attachArea span{position: relative; right: -98px;top: -105px;}
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#content").formValidator({onshow:"请输入内容",onfocus:"点评内容应该为1-300个字"}).inputValidator({min:1,max:600,onerror:"点评内容应该为1-300个字"});
+	var fls=flashChecker();
+	if(!fls.f){
+		$(".upfileArea").html("您的浏览器不支持flash,无法上传图片！")
+	}else{
+		$('#upfile').uploadify({
+			'formData'     : {
+				'timestamp' : '{{$timestamp}}',
+				'token'     : '{{$token}}',
+				'app'     : 'upload2',
+				'act'     : 'index',
+				'type'	  : 'comment'
+			},
+			'fileTypeExts':'*.jpg;*.jpeg;*.png;*.gif',
+			'fileSizeLimit':2048,
+			'buttonText':'上传', 
+			'multi':true,
+			'uploadLimit' : 5,          
+			'swf'      : '{{$path.js}}uploadify/uploadify.swf',
+			'uploader' : '{{$path.api}}',
+			'onSelectError' : function (file, errorCode, errorMsg) {
+			   if (errorCode == SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT){
+			    alert('超过文件上传大小限制（2M）！');
+			    return;
+			   }
+			   alert(errorObj.type + ', Error: ' + errorObj.info);
+			},
+			'onUploadSuccess' : function(file, data, response) {
+	         	var data = jQuery.parseJSON(data);
+	         	if(data.state == 1){
+	         		var attach = '{{$path.image}}'+data.result.path;
+	         		$("#attachArea").append('<p class="attachArea"><input type="hidden" name="attach[]" id="attach" value="'+data.result._id+'"><img width=100 height=100 src="'+attach+'"><span><img onclick="$(this).parent().parent().remove();" class="delOption" src="{{$path.images}}hulapai/delete.png"/></span></p>');
+	         	}
+	         }
+		});
+	}
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/teacher/comment/do?act=3" method="post" id="myform">
+	<table width="100%" class="table_form">
+		<tr>
+			<td width="50" align="right">内容：</td> 
+			<td><textarea name="content" id="content" style="width:50%;height:120px;"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<td width="50" align="right">图片：</td> 
+			<td>
+			<div class="upfileArea" style="position: relative;height: 50px;"><input id="upfile" name="upfile" type="file"></div>
+			<div id="attachArea"></div>
+			<p class="content_tip">注：支持jpg,jpeg,png,gif格式的图片，大小不超过2M</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="50">
+				<input type="hidden" name="event" value="{{$event}}"/>
+				<input type="hidden" name="act" value="{{$act}}"/>
+				{{foreach $datas as $event=>$students}}
+	    			{{foreach $students as $id=>$student}}
+	    			<input type="hidden" name="datas[{{$event}}][{{$id}}]" value="{{$student}}"/>
+	    			{{/foreach}}
+	    		{{/foreach}}
+    		</td> 
+			<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+			</td>
+		</tr>
+	</table>
+</form>
+</div>
+</div>
+{{include "public/footer_common.html"}}

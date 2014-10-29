@@ -1,0 +1,35 @@
+{{if !$source}}{{include "public/header_index.html"}}{{/if}}
+<style>
+	.cms_content {height:auto; overflow:hidden;}
+	.cmsLeft{width:180px; float:left; padding:8px 0px;}
+	.cmsLeft li{height:30px; line-height:30px; padding:0px 12px;}
+	.cmsRight{width:570px; float:left; padding:0px 20px; border-left:1px solid #ccc}
+	.cmsRight{line-height:24px;}
+	.cmsRight .qu h3{line-height:40px; height:40px; margin-top:20px;}
+	.cmsRight .qu h3 a{float:right;font-size:12px;font-weight:normal}
+	.cmsRight .qu h4{line-height:30px; margin-top:12px; font-size:12px; color:#000; overflow:hidden}
+
+</style>
+<div id="content" class="contenter">
+	<a name="top"></a>
+	<div class="cms_content">
+	<h3 class="qa">新手指南</h3>
+		<div class="cmsLeft">
+			<ul>
+				{{foreach from=$result item=item}}
+				<li><a href="#{{$item.id}}">{{$item.title}}</a></li>
+				{{/foreach}}
+			</ul>
+		</div>
+		<div class="cmsRight">
+			{{foreach from=$result item=item}}
+			<a name="{{$item.id}}"></a>
+			<div class="qu">
+				<h3><a href="#top">top</a>{{$item.title}}</h3>
+				<div class="">{{$item.content}}</div>
+			</div>
+			{{/foreach}}
+		</div>
+	</div>
+</div>
+{{if !$source}}{{include "public/footer.html"}}{{/if}}

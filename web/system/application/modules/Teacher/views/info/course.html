@@ -1,0 +1,80 @@
+{{include "public/header.html"}}
+<link href="{{$path.css}}jquery.treeTable.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="{{$path.js}}jquery.treetable.js"></script>
+<script type="text/javascript" src="{{$path.js}}jquery.jeditable.js"></script>
+<style type="text/css">
+<!--
+
+-->
+</style>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#dnd-example").treeTable({
+    	indent: 20
+    });
+  	$('.cnodeName').editable('/teacher/info/course', { 
+		 name:'remark',
+		 type      : 'text',
+		 width     :120,
+		 height    :18,
+         cancel    : '取消',
+         submit    : '确定'
+	 });
+  });
+  function checknode(obj)
+  {
+      var chk = $("input[type='checkbox']");
+      var count = chk.length;
+      var num = chk.index(obj);
+      var level_top = level_bottom =  chk.eq(num).attr('level')
+      for (var i=num; i>=0; i--)
+      {
+              var le = chk.eq(i).attr('level');
+              if(eval(le) < eval(level_top)) 
+              {
+                  chk.eq(i).attr("checked",true);
+                  var level_top = level_top-1;
+              }
+      }
+      for (var j=num+1; j<count; j++)
+      {
+              var le = chk.eq(j).attr('level');
+             
+              if(chk.eq(num).attr("checked")) {
+                  if(eval(le) > eval(level_bottom)){
+                  	chk.eq(j).attr("checked",true);
+                  }else if(eval(le) == eval(level_bottom)){
+                  	break;
+                  }
+              }
+              else {
+                  if(eval(le) > eval(level_bottom)){
+                  	chk.eq(j).attr("checked",false);
+                  }else if(eval(le) == eval(level_bottom)){
+                  	break;
+                  }
+              }
+      }
+  }
+</script>
+<div class="pad_common">
+<div class="subnav">
+    <div class="content-menu ib-a link line-x">
+        <a class="fb" href="/teacher/info/index"><em class="black">个人资料</em></a>
+        <a class="fb" href="/teacher/info/course"><em>授课内容</em></a>
+    </div>
+</div>
+<div class="common-form">
+<div class="table-list" id="load_priv">
+<form name="myform" action="/public/selectCourse" method="post">
+<table width="100%" cellspacing="0" id="dnd-example">
+<tbody>
+{{$categorys}}
+</tbody>
+</table>
+    <div class="btn"><input type="submit"  class="button" name="dosubmit" id="dosubmit" value="提交" /></div>
+</form>
+</div>
+</div>
+</div>
+{{include "public/footer.html"}}

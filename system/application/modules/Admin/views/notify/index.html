@@ -1,0 +1,66 @@
+{{include "public/header.html"}}
+<div class="pad-lr-10">
+<div class="subnav">
+</div>
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="text" name="content" class="input-text ufocus" id="content" value="{{$_GET.content}}" def="内容">
+			<input type="submit" value="搜索" class="button search" name="search">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+</form>
+<div class="table-list">
+
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">内容</th>
+			<th>接收老师</th>
+			<th>接收学生</th>
+			<th>发送时间</th>
+			<th>状态</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $notifies as $key=>$notify}}
+    <tr>
+		<td align="left" title="{{$notify.content}}">{{$notify.content|truncate:30:"...":true}}</td>
+		<td align="center">
+		{{if $notify.teacher}}<a class="link" href="javascript:show({{$key}},'teacher');">{{$notify.teacher|truncate:30:"...":true}}</a>{{else}}无{{/if}}
+		<div class="send_teacher_{{$key}}" style="display:none;">{{$notify.teacher}}</div>
+		</td>
+		<td align="center">
+		{{if $notify.student}}<a class="link" href="javascript:show({{$key}},'student');">{{$notify.student|truncate:30:"...":true}}</a>{{else}}无{{/if}}
+		<div class="send_student_{{$key}}" style="display:none;">{{$notify.student}}</div>
+		</td>
+		<td align="center">{{$notify.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+		<td align="center">{{if $notify.status == 1}}已发送{{else if $notify.status == 0}}待发送{{/if}}</td>
+    </tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+function show(key,type){
+	window.top.art.dialog({
+		id:'show',
+		content:$(".send_"+type+"_"+key)[0], 
+		title:'通知人员', 
+		width:'450', 
+		height:'300', 
+		lock:true
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

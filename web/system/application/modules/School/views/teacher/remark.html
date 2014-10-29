@@ -1,0 +1,27 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/school/teacher/remark?act=1" method="post" id="myform">
+<table width="100%" class="table_form">
+	<tr>
+		<td width="50" align="right">备注：</td> 
+		<td><textarea name="remark" id="remark" style="width:150px;height:80px;"></textarea>
+		</td>
+	</tr>
+	<tr>
+		<td><input type="hidden" name="teacher" id="teacher" value="{{$teacher}}"></td> 
+		<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+		</td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

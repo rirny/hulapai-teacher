@@ -1,0 +1,40 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#name").formValidator({onshow:"请输入学生名",onfocus:"学生名长度为2-20个字符"}).inputValidator({min:2,max:20,onerror:"学生名长度为2-20个字符"});
+	$("#parent_name").formValidator({onshow:"请输入家长",onfocus:"家长名长度为2-20个字符"}).inputValidator({min:2,max:20,onerror:"家长名长度为2-20个字符"});
+	$("#phone").formValidator({onshow:"请输入联系电话",onfocus:"请输入联系电话"}).regexValidator({regexp:"(^(1)[0-9]{10}$)|(^(([0\\+]\\d{2,3}-)?(0\\d{2,3})-)?(\\d{7,8})(-(\\d{3,}))?$)", onerror:"你输入的联系电话不正确"});
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/school/student/create" method="post" id="myform">
+<table width="100%" class="table_form">
+	<tr>
+		<td width="120" align="right">学生名：</td> 
+		<td><input type="text" name="name"  class="input-text" id="name">
+		</td>
+	</tr>
+	<tr>
+		<td width="120" align="right">家长：</td> 
+		<td><input type="text" name="parent_name"  class="input-text" id="parent_name">
+		</td>
+	</tr>
+	<tr>
+		<td width="120" align="right">联系电话：</td> 
+		<td><input type="text" name="phone"  class="input-text" id="phone">
+		</td>
+	</tr>
+	<tr>
+		<td width="120"></td> 
+		<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+		</td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

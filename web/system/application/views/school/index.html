@@ -1,0 +1,33 @@
+{{include "public/header_main.html"}}
+	<div id="content" class="contenter">
+		<div id="schoolList" class="content_center lf"  style="height:360px;">
+			<h5>我的机构</h5>
+			<ul>
+				{{foreach $datas as $key=>$data}}
+				<li>
+					<div class="myschool">
+						<div class="school_logo">{{imageUrl($data.school.id,3,100)}}<table><tbody><tr><td width="110">{{$data.school.name}}</td></tr></tbody></table></div>
+						<p class="school_code">机构号：{{$data.school.code}}</p>
+						<p class="school_manage"><a href="/school?id={{$data.id}}">管理</a></p>
+					</div>
+				</li>
+				{{/foreach}}
+				<li>
+					<div class="myschool" style="border-color:#17b2fb;">
+						<p class="school_add"><img src='{{$path.images}}hulapai/add_school.png' width="26" height="26"/></p>
+						<p class="school_add_link"><a href="/school/add">添加机构</a></p>
+					</div>
+				</li>
+			</ul>
+			<div id="pages">{{$pages}}</div>
+		</div>
+	</div>	
+<script type="text/javascript"> 
+$(".myschool").click(function(){
+	var url = $(this).children(".school_manage").children("a").attr('href');
+	url = url?url:$(this).children(".school_add_link").children("a").attr('href'); 
+	window.location.href = url;
+});
+</script>
+
+{{include "public/footer.html"}}

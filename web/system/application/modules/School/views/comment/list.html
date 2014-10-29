@@ -1,0 +1,100 @@
+{{include "public/header.html"}}
+<script language="javascript">
+function dosort(type){
+	var sorts = $("#sorts").val();
+	if(sorts.indexOf(type) >= 0){
+		if(sorts.indexOf('desc') >= 0){
+			sorts = type+' asc';
+		}else{
+			sorts = type+' desc';
+		}
+	}else{
+		sorts = type+' desc';
+	}
+	$("#sorts").val(sorts);
+	$("#searchform").submit();
+}
+
+function selectC(c,type){
+	if(type == 'student'){
+		$("#studentName").val(c);
+		$("#searchform").submit();
+	}else if(type == 'teacher'){
+		$("#teacher").val(c);
+		$("#searchform").submit();
+	}
+}
+
+function reset(){
+	alert(123)
+	
+	
+}
+</script>
+<div class="pad_common">
+<form method="get" action="" name="searchform" id="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="text" name="content" class="input-text ufocus" id="content" value="{{$_GET.content}}" def="关键字">
+			<input type="text" name="studentName" class="input-text ufocus" id="studentName" value="{{$_GET.studentName}}" def="学生名">
+			{{Html::select($teachers,$_GET.teacher, 'teacher', 'teacher','全部老师')}}
+			{{Html::date('start_date',$_GET.start_date,'点评起始日期')}}
+			{{Html::date('end_date',$_GET.end_date,'点评终止日期')}}
+			<input type="hidden" name="sorts" class="input-text" id="sorts" value="{{$sorts}}">
+			<input type="submit" value="搜索" class="button search" name="search">
+			<p class="link" onclick="location.href='/school/comment/list'">清除搜素条件</p>
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+	<input type="hidden" name="pc_hash" value="bLHaEA">
+</form>
+<div class="table-list">
+<table width="100%" cellspacing="0" >
+	<thead>
+		<tr>
+			<th width="400">内容</th>
+			<th><a class="link" href="javascript:dosort('a.student')">学生</a></th>
+			<th><a class="link" href="javascript:dosort('a.teacher')">点评老师</a></th>
+			<th><a class="link" href="javascript:dosort('a.event')">课程</a></th>
+			<th><a class="link" href="javascript:dosort('a.create_time')">点评时间</a></th>
+			<th>回复数</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $comments as $comment}}
+    <tr>
+		<td width="400" class="link" onclick="show({{$comment.id}})">{{$comment.content|truncate:100:"...":true}}</td>
+		<td align="left">{{imageUrl($comment.student,2,30)}}&nbsp;<span class="link" onclick="selectC('{{studentName($comment.student)}}','student')">{{studentName($comment.student)}}</span></td>
+		<td align="left">{{imageUrl($comment.teacher,1,30)}}&nbsp;<span class="link" onclick="selectC('{{$comment.teacher}}','teacher')">{{teacherName($comment.teacher)}}</span></td>
+		<td align="center">{{$comment.text}}<p>{{$comment.start_date|date_format:'%Y-%m-%d %H:%M'}}至{{$comment.end_date|date_format:'%H:%M'}}</p></td>
+		<td align="center">{{$comment.create_time}}</td>
+		<td align="center">{{$comment.replies}}</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=6>暂无点评数据</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+<script language="JavaScript">
+<!--
+function show(id){
+	window.top.art.dialog({
+		id:'show',
+		iframe:'/school/comment/show?id='+id, 
+		title:"点评详情", 
+		width:'836', 
+		height:'460', 
+		lock:true
+	});
+}
+//-->
+</script>
+</div>
+</div>
+<div id="pages">{{$pages}}</div>
+{{include "public/footer.html"}}

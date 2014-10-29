@@ -1,0 +1,34 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#name").formValidator({
+		onshow:"请输入用户组名",
+		onfocus:"用户组名应该为2-20位之间"
+	}).inputValidator({
+		min:2,
+		max:20,
+		onerror:"用户组名应该为2-20位之间"
+	})
+
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/school/user_group/add" method="post" id="myform">
+	<table width="100%" class="table_form">
+		<tr>
+			<td width="50" align="right">组名：</td> 
+			<td><input type="text" name="info[name]"  class="input-text" id="name"></td>
+		</tr>
+		<tr>
+			<td></td> 
+			<td><input name="dosubmit" type="submit" value="提交" class="button state_highlight"></td>
+		</tr>
+	</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

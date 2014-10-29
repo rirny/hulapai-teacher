@@ -1,0 +1,51 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#username").formValidator({
+		onshow:"请输入用户手机号/呼啦号",
+		onfocus:"请输入用户手机号/呼啦号"
+	}).inputValidator({
+		min:2,
+		max:15,
+		onerror:"请输入用户手机号/呼啦号"
+	}).ajaxValidator({
+	    type : "get",
+		url : "/public/userExist",
+		data :"",
+		datatype : "html",
+		async:'false',
+		success : function(data){	
+            if( data == "1" ) {
+                return true;
+			} else {
+                return false;
+			}
+		},
+		buttons: $("#dosubmit"),
+		onerror : "用户账号/呼啦号不存在",
+		onwait : "检测中"
+	});
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/school/teacher/add" method="post" id="myform">
+<table width="100%" class="table_form">
+	<tr>
+		<td width="120" align="right">用户账号/呼啦号：</td> 
+		<td><input type="text" name="username"  class="input-text" id="username">
+		</td>
+	</tr>
+	<tr>
+		<td></td> 
+		<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+		</td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

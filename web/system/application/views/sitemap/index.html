@@ -1,0 +1,7 @@
+{{include "public/header_index.html"}}
+<div id="content" class="contenter">
+	{{if file_exists($html_file)}}
+	{{include $html_file}}
+	{{/if}}
+</div>
+{{include "public/footer.html"}}

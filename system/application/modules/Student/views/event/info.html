@@ -1,0 +1,146 @@
+{{include "public/header.html"}}
+<script type="text/javascript" src="{{$path.js}}jquery.jeditable.js"></script>
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$('.remark').editable('/student/event/infoEdit', { 
+		 name:'remark',
+		 type      : 'text',
+		 width     :120,
+		 height    :18,
+         cancel    : '取消',
+         submit    : '确定'
+	 });
+	 $('.fee').editable('/student/event/infoEdit', { 
+		 name:'fee',
+		 type      : 'text',
+		 width     :120,
+		 height    :18,
+         cancel    : '取消',
+         submit    : '确定'
+	 });
+	 
+	 $('.event_color').click(function(){
+	 	var color = $("#color").val();
+	 	$.ajax({
+	 		type:"post",
+	 		url:"/student/event/infoEdit",
+	 		data:"color="+color+"&id={{$event.id}}"
+	 	});
+	 });
+});
+function reply(e){
+	var content = $(e).prev('.reply_content').val();
+	if(!content || content == '回复：'){
+		alert('回复内容不能为空');
+		return false;
+	}
+	var pid = $('#pid').val();
+	$.ajax({
+ 		type:"post",
+ 		url:"/student/comment/reply",
+ 		data:'pid='+pid+'&content='+content,
+ 		success:function(data){
+ 			if(data == 1){
+			 	location.reload();
+ 			}else{
+ 				alert(data)
+ 			}
+ 		}
+ 	});
+}
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<div id="event_info">
+<table width="60%" class="table_form contentWrap">
+	<tr>
+	<td width="200">课程名称：<a class="remark event_remark_ts" id="{{$event.id}}">{{$event.remark}}</a></td> 
+	<td width="200">学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;费：<a class="fee event_fee_ts" id="{{$event.id}}">{{$event.fee}}</a></td>
+	</tr>
+	<tr>
+	<td width="200">日&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;期：{{$event.start_date|date_format:'%Y-%m-%d'}}</td> 
+	<td width="200">时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间：{{$event.start_date|date_format:'%H'}}：{{$event.start_date|date_format:'%M'}}&nbsp;至&nbsp;{{$event.end_date|date_format:'%H'}}：{{$event.end_date|date_format:'%M'}}</td>
+	</tr>
+	<tr>
+	<td colspan=2 width="200"><li style="float:left;">颜&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;色：</li>{{Html::eventColor($event.color,'color')}}</td> 
+	</tr>
+</table>
+</div>
+<div id="event_info_other">
+	<div class="other_1">
+		<input type="hidden" name="event" id="event" value="{{$event.event}}"/>
+		<div class="comments">
+			{{if !$teacherComment}}
+			<p class="no_content">暂时没有点评</p>
+			{{else}}
+			<ul>
+				<li class="avatar">{{imageUrl($teacherComment.creator,1,50)}}</li>
+				<li class="comment">
+					<span class="mark"></span>
+					<span style="color:#333">{{teacherName($teacherComment.creator)}}(老师)</span>
+					<span class="link">{{$teacherComment.content}}
+					{{foreach $teacherComment.attachInfos as $attachInfo}}
+					<span class="attach link" link="{{$path.image}}{{$attachInfo.save_path}}{{$attachInfo.save_name}}">附件：{{$attachInfo.attach_name|truncate:15:"...":true}}</span>
+					{{/foreach}}
+					</span>
+					<span class="ccc">{{$teacherComment.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</span>
+					
+				</li>				
+			</ul>
+			{{foreach $comments as $comment}}
+			<ul>
+				<li class="avatar">{{imageUrl($comment.creator,1,50)}}</li>
+				<li class="comment">
+					<span class="mark"></span>
+					<span style="color:#333">{{if $comment.character == "teacher" || $comment.character == "school"}}{{teacherName($comment.creator)}}(老师){{elseif $comment.character == "student"}}{{studentName($comment.student)}}{{relation($comment.creator,$comment.student)}}{{/if}}</span>
+					<span style="color:#999">{{$comment.content}}
+					{{foreach $comment.attachInfos as $attachInfo}}
+					<span class="attach link" link="{{$path.image}}{{$attachInfo.save_path}}{{$attachInfo.save_name}}">附件：{{$attachInfo.attach_name|truncate:15:"...":true}}</span>
+					{{/foreach}}
+					</span>
+					<span class="ccc">{{$comment.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</span>
+					
+				</li>				
+			</ul>
+			{{/foreach}}
+			<span class="reply">
+				<input type="hidden" name="pid" id="pid" value="{{$teacherComment.id}}"/>
+				<input type="text" def='回复：' value="" class="input-text ufocus reply_content" name="content">
+				<input name="dosubmit" type="submit" value="回复" class="button state_highlight" style="width:60px;" onclick="reply(this)">
+			</span>
+			{{/if}}
+		</div>
+		<div id="pages">{{$pages}}</div>
+	</div>
+	<div class="other_2">
+		<div class="events">
+			<ul>
+				<li><span>相关课程</span></li>
+				{{foreach $others as $other}}
+				<li class="event"><span><a href="/student/event/info?id={{$other.event}}">{{$other.remark}}</a></span><span class="ccc" style="font-size:12px">{{$other.start_date|date_format:'%Y-%m-%d'}}&nbsp;{{$other.start_date|date_format:'%H:%M'}}&nbsp;{{$other.end_date|date_format:'%H:%M'}}</span></li>
+				{{foreachelse}}
+				<li><span>暂无</span></li>
+				{{/foreach}}
+			</ul>
+		</div>
+	</div>
+</div>
+</div>
+</div>
+<script language="JavaScript">
+<!--
+$(".attach").click(function(){
+	var link = $(this).attr('link');
+	window.top.art.dialog({
+		id:'attach',
+		content:"<img src='"+link+"'/>", 
+		title:'查看附件', 	
+		lock:true
+	});
+});
+//-->
+</script>
+{{include "public/footer.html"}}

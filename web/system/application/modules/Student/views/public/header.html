@@ -1,0 +1,28 @@
+{{include "public/header_common.html"}} 
+<div class="header_ts">
+	<div class="contenter">
+		<div class="logo lf"><a href="/user"></a></div>
+		<div class="welcome lf">{{if $STUDENT}}欢迎您，{{$STUDENT.name}}同学，<a href="/Logout" class="yellow">退出</a>{{/if}}</div>
+		<ul class="rt" id="nav_ts">
+			<li><a href="/student/index/index" class="hsubs">首页</a></li>
+			<li><a href="/user" class="hsubs">用户中心</a></li>
+			<li><a href="#" class="hsubs school_ts">{{if $currentSchoolName}}{{$currentSchoolName}}{{else}}无机构{{/if}}</a>
+				<ul class="subs">
+					{{foreach $schools as $school}}
+					<li style="margin:0"><a href="javascript:school_select({{$school.id}}, '{{$school.name}}')">{{$school.name}}</a></li>
+					{{/foreach}}
+					<li style="margin:0"><a href="javascript:school_add()" class="school_add">添加机构</a></li>
+				</ul>
+			</li>
+			<li><a href="#" class="hsubs message_ts">消息中心</a>
+				<ul class="subs">
+					<li style="margin:0"><a href="/student/message/index?type=1">通知</a></li>
+					<li style="margin:0"><a href="/student/message/index?type=2">问卷调查</a></li>
+					<li style="margin:0"><a href="/student/apply/index">申请</a></li>
+				</ul>
+			</li>
+	    </ul>
+	</div>
+</div>
+<div id="content" class="contenter_ts">
+{{include "public/left.html"}}      

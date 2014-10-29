@@ -1,0 +1,115 @@
+{{include "public/header.html"}}
+<link href="{{$path.js}}uploadify/uploadify.css" rel="stylesheet" type="text/css" />
+<script src="{{$path.js}}uploadify/jquery.uploadify.min.js" language="javascript" type="text/javascript" ></script>
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#name").formValidator({onshow:"请输入机构名称",onfocus:"机构名称长度为2-30个字符"}).inputValidator({min:2,max:30,onerror:"机构名称长度为2-30个字符"});
+	$("#contact").formValidator({onshow:"请输入联系人",onfocus:"联系人长度为2-10个字符"}).inputValidator({min:2,max:10,onerror:"联系人长度为2-10个字符"});
+	$("#phone").formValidator({onshow:"请输入电话号码",onfocus:"区号-电话号码-分机号"}).regexValidator({regexp:"^(([0\\+]\\d{2,3}-)?(0\\d{2,3})-)?(\\d{7,8})(-(\\d{3,}))?$", onerror:"你输入的联系电话不正确(区号-电话号码-分机号)"});
+	$("#mobile").formValidator({onshow:"请输入手机号码",onfocus:"请输入手机号码"}).regexValidator({regexp:"^(1)[0-9]{10}$", onerror:"你输入的手机号码不正确"});
+	$("#description").formValidator({onshow:"请输入机构简介",onfocus:"长度为1-300个字"}).inputValidator({min:0,max:600,onerror:"长度为1-300个字"});
+	var fls=flashChecker();
+	if(!fls.f){
+		$(".upfileArea").html("您的浏览器不支持flash,无法上传图片！")
+	}else{
+		$('#upfile').uploadify({
+			'formData'     : {
+				'timestamp' : '{{$timestamp}}',
+				'token'     : '{{$token}}',
+				'app'     : 'upload2',
+				'act'     : 'index',
+				'type'	  : 'school',
+				'school'  : '{{$id}}'
+			},
+			'width':98,
+			'height':39,
+			'fileTypeExts':'*.jpg;*.jpeg;*.png;*.gif',
+			'fileSizeLimit':2048,
+			'buttonText':'上传',
+			'multi':false,
+			'swf'      : '{{$path.js}}uploadify/uploadify.swf',
+			'uploader' : '{{$path.api}}',
+			'onSelectError' : function (file, errorCode, errorMsg) {
+			   if (errorCode == SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT){
+			    alert('超过文件上传大小限制（2M）！');
+			    return;
+			   }
+			   alert(errorObj.type + ', Error: ' + errorObj.info);
+			},
+			'onUploadSuccess' : function(file, data, response) {
+	         	var data = jQuery.parseJSON(data);
+	         	if(data.state == 1){
+	         		var logo = '{{$path.avatar}}'+data.result.school;
+	         		$("#logoArea").attr('src',logo);
+	         	}
+	         }
+		});
+	}
+});
+//-->
+</script>
+<div class="subnav">
+    <div class="content-menu ib-a blue line-x"> 
+        <a href="/admin/school/index"><em>管理机构</em></a><span>|</span>
+        <a href="/admin/school/add"><em>添加机构</em></a>  
+    </div>
+</div>
+<div class="pad_10">
+<div class="common-form">
+<form name="myform" action="/admin/school/edit" method="post" id="myform" enctype="multipart/form-data">
+<table width="100%" class="table_form contentWrap">
+<tr>
+<td>机构号</td> 
+<td>{{$school.code}}</td>
+</tr>
+<tr>
+<td>机构名称</td> 
+<td><input type="text" name="info[name]" class="input-text" id="name" value="{{$school.name}}"></input></td>
+</tr>
+<tr>
+<td>机构类型</td> 
+<td>{{Html::selectSchoolType($school.type,'info[type]')}}</td>
+</tr>
+<tr>
+<td>机构logo</td> 
+<td><input id="upfile" name="upfile" type="file">
+		<img id="logoArea" src="{{imageUrl($school.id,3,100,false)}}">
+</td>
+</tr>
+<tr>
+<td>联系人</td> 
+<td><input type="text" name="info[contact]" class="input-text" id="contact" value="{{$school.contact}}"></input></td>
+</tr>
+<tr>
+<td>联系电话1：</td> 
+<td><input type="text" name="info[phone]" class="input-text" id="phone" value="{{$school.phone}}"></input>（区号-电话号码-分机号/手机号码/客服电话）</td>
+</tr>
+<tr>
+<td>联系电话2：</td> 
+<td><input type="text" name="info[phone2]" class="input-text" id="phone2" value="{{$school.phone2}}"></input>（区号-电话号码-分机号/手机号码/客服电话）</td>
+</tr>
+<tr>
+<td>地区</td> 
+<td>{{Html::selectArea($school.province,$school.city,$school.area,"info[province]","info[city]","info[area]")}}
+</td>
+</tr>
+<tr>
+<td>详细地址</td> 
+<td>
+<input type="text" name="info[address]" class="input-text" id="address" value="{{$school.address}}"></input>
+</td>
+</tr>
+<tr>
+<td>机构简介</td> 
+<td><textarea name="info[description]" id="description" style="width:50%;height:120px;">{{$school.description}}</textarea></td>
+</tr>
+</table>
+    <div class="bk15"></div>
+    <input name="id" type="hidden" value="{{$school.id}}">
+    <input name="dosubmit" type="submit" value="提交" class="button">
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

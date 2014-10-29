@@ -1,0 +1,90 @@
+{{include "public/header.html"}}
+<div class="subnav">
+    <div class="content-menu ib-a blue line-x">
+        <a class="add fb" href="javascript:add();"><em>添加用户组</em></a>
+        <a class="on" href="javascript:;"><em>管理用户组</em></a>    
+    </div>
+</div>
+<div class="pad-lr-10">
+<div class="table-list">
+
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">ID</th>
+			<th>用户组名</th>
+			<th>组类别</th>
+			<th>所属机构</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $groups as $k=>$group}}
+    <tr>
+		<td align="left">{{$group.gid}}</td>
+		<td align="center">{{$group.name}}</td>
+		<td align="center">{{$group.type}}</td>
+		<td align="center">{{if isset($group.school.name)}}{{$group.school.name}}{{/if}}</td>
+		<td align="center">
+			{{if $group.gid != 1}}
+			<a href="javascript:enable({{$group.gid}},'{{$group.name}}')">[权限设置]</a> | 
+			<a href="javascript:edit({{$group.gid}}, '{{$group.name}}')">[修改]</a> | 		
+			<a href="javascript:confirmurl('/admin/user_group/delete?gid={{$group.gid}}', '是否删除?')">[删除]</a>
+			{{/if}}
+		</td>
+    </tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+function add(){
+	window.top.art.dialog({
+		id:'add',
+		iframe:'/admin/user_group/add', 
+		title:'添加用户组', 
+		width:'700', 
+		height:'150', 
+		lock:true
+	}, function(){
+		var d = window.top.art.dialog({
+			id:'add'
+		}).data.iframe;
+		var form = d.document.getElementById('dosubmit');
+		form.click();
+		return false;
+	}, function(){
+		window.top.art.dialog({id:'add'}).close();
+	});
+}
+function edit(gid, name) {
+	window.top.art.dialog({id:'edit'}).close();
+	window.top.art.dialog({
+		title:'修改用户组《'+name+'》',
+		id:'edit',
+		iframe:'/admin/user_group/edit?gid='+gid,
+		width:'700',
+		height:'150'
+	}, function(){
+		var d = window.top.art.dialog({id:'edit'}).data.iframe;
+		d.document.getElementById('dosubmit').click();
+		return false;
+	}, function(){
+		window.top.art.dialog({id:'edit'}).close();
+	});
+}
+function enable(gid, name) {
+	window.top.art.dialog({
+		title:'权限设置《'+name+'》',
+		id:'enable',
+		iframe:'/admin/user_group/enable?gid='+gid,
+		width:'700',
+		height:'500'
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

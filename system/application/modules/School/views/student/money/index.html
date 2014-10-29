@@ -1,0 +1,65 @@
+{{include "public/header.html"}}
+<style type="text/css">
+.student_total{background: url("{{$path.images}}/hulapai/header_bg.png") repeat;margin-top:10px;height:30px;}
+.student_total p{float:left;line-height:30px;padding:0 8px;}
+</style>
+<div class="pad_common">
+<div class="subnav">
+    
+</div>
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="center">缴费金额（元）</th>
+			<th align="center">时间</th>
+			<th><button class="button" style="height: 30px;margin: 5px 0;width: 65px;" onclick="add({{$_GET.student}})">增加</button></th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $fees as $key=>$fee}}
+    <tr>
+		<td align="center">{{$fee.money}}</td>
+		<td align="center">{{$fee.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+		<td align="center">	
+			<a class="link" href="javascript:edit({{$fee.id}},{{$fee.student}})">[编辑]</a>
+			<a class="link" href="javascript:confirmurl('/school/student_money/delete?id={{$fee.id}}&student={{$fee.student}}', '是否删除?')">[删除]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=4>暂无缴费记录</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+<div class="student_total">
+	<p>总计金额：<span class="yellow">{{$hadMoney}}</span>元</p>
+</div>	
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+function add(student){
+	window.top.art.dialog({
+		id:'add',
+		iframe:'/school/student_money/add?student='+student, 
+		title:'缴费', 
+		width:'420', 
+		height:'350',
+		lock:true
+	});
+}
+
+function edit(id,student){
+	window.top.art.dialog({
+		id:'edit',
+		iframe:'/school/student_money/edit?id='+id+'&student='+student, 
+		title:'缴费修改', 
+		width:'420', 
+		height:'350',
+		lock:true
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

@@ -1,0 +1,60 @@
+{{include "public/header.html"}}
+<div class="pad-lr-10">
+<div class="subnav">
+    
+</div>
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="text" name="teacherName" class="input-text ufocus" id="teacherName" value="{{$_GET.teacherName}}" def="老师名">
+			{{Html::selectStatus($_GET.status, 'status', 'status','状态')}}
+			<input type="submit" value="搜索" class="button search" name="search">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+	<input type="hidden" name="pc_hash" value="bLHaEA">
+</form>
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">教师名</th>
+			<th align="left">联系方式</th>
+			<th align="left">加入时间</th>
+			<th align="left">状态</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $teachers as $teacher}}
+    <tr>
+		<td align="left"><a href="javascript:info({{$teacher.user}},'{{$teacher.firstname}}{{$teacher.lastname}}')" class="link">{{imageUrl($teacher.user,1,30)}}&nbsp;{{$teacher.firstname}}{{$teacher.lastname}}</a></td>
+		<td align="left">{{$teacher.account}}</td>
+		<td align="left">{{$teacher.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+		<td align="left">{{if $teacher.status == 2}}冻结{{elseif $teacher.status == 1}}删除{{elseif $teacher.status == 0}}正常{{/if}}</td>
+    </tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+function info(teacher,name){
+	window.top.art.dialog({
+		id:'info',
+		iframe:'/admin/teacher/info?teacher='+teacher, 
+		title:'老师详情《'+name+'》', 
+		width:'580', 
+		height:'380', 
+		lock:true
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

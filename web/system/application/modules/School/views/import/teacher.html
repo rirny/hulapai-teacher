@@ -1,0 +1,72 @@
+{{include "public/header.html"}}
+{{if !$import}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#password").formValidator({onshow:"请输入密码",onfocus:"长度为6-16个字符"}).inputValidator({min:6,max:16,onerror:"长度为6-16个字符"})
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/school/import/teacher" method="post" id="myform" enctype="multipart/form-data">
+<table width="100%" class="table_form contentWrap">
+	<tr>
+	<td width=120 align="right">导入老师</td> 
+	<td>
+	<input id="upfile" name="upfile" type="file">
+	</td>
+	</tr>
+	<tr>
+	<td width=120 align="right">密码</td> 
+	<td>
+	<input name="password" id="password" type="password" class="input-text" value=""/>
+	</td>
+	</tr>
+	<tr>
+	<td align="right"></td> 
+	<td><input name="dosubmit" type="submit" value="导入" class="button state_highlight"></td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{else}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#password").formValidator({onshow:"请输入密码",onfocus:"长度为6-16个字符"}).inputValidator({min:6,max:16,onerror:"长度为6-16个字符"})
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="subnav">
+</div>
+<div class="table-list">
+
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th>老师名</th>
+			<th>手机号</th>
+			<th>地址</th>
+			<th></th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $teachers as $key=>$teacher}}
+    <tr>
+		<td align="center">{{$teacher.firstname}}{{$teacher.lastname}}</td>
+		<td align="center">{{$teacher.account}}</td>
+		<td align="center">{{$teacher.address}}</td>
+		<td align="center"><a href="javascript:showDetail({{$notify.id}})" class="link">[查看详情]</a></td>
+    </tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+</div>
+{{/if}}
+{{include "public/footer.html"}}

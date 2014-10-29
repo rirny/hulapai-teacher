@@ -1,0 +1,63 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#username").formValidator({
+		onshow:"请输入用户手机号/呼啦号",
+		onfocus:"请输入用户手机号/呼啦号"
+	}).inputValidator({
+		min:2,
+		max:15,
+		onerror:"请输入用户手机号/呼啦号"
+	}).ajaxValidator({
+	    type : "get",
+		url : "/public/userExist",
+		data :"",
+		datatype : "html",
+		async:'false',
+		success : function(data){	
+            if( data == "1" ) {
+                return true;
+			} else {
+                return false;
+			}
+		},
+		buttons: $("#dosubmit"),
+		onerror : "用户账号/呼啦号不存在",
+		onwait : "检测中"
+	});
+});
+//-->
+</script>
+<div class="subnav">
+    <div class="content-menu ib-a blue line-x"> 
+        <a href="/admin/user/index"><em>管理用户</em></a><span>|</span>
+        <a class="on" href="javascript:;"><em>添加用户</em></a>  
+    </div>
+</div>
+<div class="pad_10">
+<div class="common-form">
+<form name="myform" action="/admin/user/add" method="post" id="myform">
+<table width="100%" class="table_form contentWrap">
+<tr>
+<td>用户账号/呼啦号</td> 
+<td><input type="text" name="info[username]" class="input-text" id="username" value=""></input></td>
+</tr>
+<tr>
+<td>用户组</td>
+<td>
+<select name="info[gid]">
+{{foreach $groups as $group}}
+<option value="{{$group.gid}}" {{if $group.gid==$user.gid}}selected{{/if}}>{{$group.name}}</option>
+{{/foreach}}
+</select>
+</td>
+</tr>
+</table>
+    <div class="bk15"></div>
+    <input id="dosubmit" name="dosubmit" type="submit" value="提交" class="button">
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

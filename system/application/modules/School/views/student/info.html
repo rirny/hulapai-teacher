@@ -1,0 +1,327 @@
+{{include "public/header.html"}}
+<style type="text/css">
+ul.parentList{display:inline-block;_zoom:1;*display:inline;vertical-align:top}
+.parentList li{width:200px;height:50px;}
+.parentList li p{float:left;width:120px;}
+.parentList li .img{width:30px;margin-top:5px;}
+.parentList li p span{display:inline-block;vertical-align:middle;margin-left:5px;}
+.desList{width:100%;height:auto;overflow:hidden;}
+.desList li{border:1px solid #CCC;padding:4px 10px;width:200px;height:20px;margin: 4px 2px;float:left; position: relative;}
+.desList li span{position: absolute;left:195px;cursor: pointer;float:right; width:8px;height:20px;display:inline-block;padding-right:10px;border-left: 1px solid #CCC; background:url('{{$path.images}}hulapai/delete_icon.png') no-repeat right;}
+.student_total{background: url("{{$path.images}}/hulapai/header_bg.png") repeat;margin-top:10px;height:30px;}
+.student_total p{float:left;line-height:30px;padding:0 8px;}
+</style>
+<div class="pad_common">
+<div class="common-form">
+	<table width="100%" class="table_form">
+		<tr>
+			<td width="150" valign="top">{{imageUrl($student.id,2,150)}}</td> 
+			<td width="270" valign="top">
+				<table class="table_form list">
+					<tr>
+						<td align="left">姓名：{{studentName($student.id)}}({{$student.hulaid}})</td> 							
+					</tr>
+					<tr>
+						<td align="left">生日：{{$student.birthday}}</td> 							
+					</tr>
+					<tr>
+						<td align="left">性别：{{if $student.gender == 1}}男{{elseif $student.gender == 2}}女{{else}}未知{{/if}}</td> 								
+					</tr>	
+					<tr>
+						<td align="left">加入时间：{{$student.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</td> 							
+					</tr>			
+				</table>
+			</td> 
+			<td width="300" valign="top">
+				<table class="table_form">
+					<tr>
+						<td width="80" align="left" valign="top">联系方式：</td>
+						<td>
+							<ul class="parentList">
+								{{foreach $parents as $parent}}
+								<li><p class="img">{{imageUrl($parent.user,1,30)}}</p><p><span>{{$parent.nickname}}({{if $parent.relation == 1}}本人{{elseif $parent.relation == 2}}爸爸{{elseif $parent.relation == 3}}妈妈{{elseif $parent.relation == 4}}家长{{/if}})</span><span>{{$parent.account}}</span></p></li>
+								{{/foreach}}
+							</ul>							
+						</td>
+					</tr>		
+				</table>
+			</td> 
+		</tr>
+	</table>
+</div>
+<div class="col-tab">
+		<ul class="tabBut cu-li">
+	            <li id="tab_setting_4" {{if !$_GET.act || $_GET.act == 4}}class="on"{{/if}} onclick="SwapTab('setting','on','',4,4);">基本信息</li>
+	            <li id="tab_setting_1" {{if $_GET.act == 1}}class="on"{{/if}} onclick="SwapTab('setting','on','',4,1);">课程</li>
+	            <!--<li id="tab_setting_2" {{if $_GET.act == 2}}class="on"{{/if}} onclick="SwapTab('setting','on','',4,2);">评价</li>-->
+	            <li id="tab_setting_3" {{if $_GET.act == 3}}class="on"{{/if}} onclick="SwapTab('setting','on','',4,3);">备注</li>
+		</ul>
+	{{if $_GET.act == 1}}
+	<div id="div_setting_1" class="contentList">
+		<p class="content_tip">注:以下数据为截止至{{date('Y-m-d')}}为止的课程</p>
+		<form method="get" action="" name="searchform">
+			<table width="100%" cellspacing="0" class="search-form">
+			    <tbody>
+					<tr>
+					<td>
+					<div class="explain-col">
+					<input type="hidden" name="student" value="{{$student.id}}"/>
+					<input type="hidden" name="act" value="1"/>
+					<input type="text" name="text" class="input-text ufocus" id="text" value="{{$_GET.text}}" def="课程名称">
+					{{Html::date('start_date',$_GET.start_date,'起始日期')}}
+					{{Html::date('end_date',$_GET.end_date,'终止日期')}}
+					<input type="submit" value="搜索" class="button search" name="search">
+				</div>
+					</td>
+					</tr>
+			    </tbody>
+			</table>
+		</form>
+		<table width="100%" cellspacing="0" class="table-list">
+			<thead>
+				<tr>
+					<th>课程名称</th>
+					<th>上课日期</th>
+					<th>上课时间</th>
+					<th>上课老师</th>
+					<th>考勤</th>
+					<th>点评</th>
+				</tr>
+			</thead>
+			<tbody class="ul_content">
+			{{foreach $events as $event}}
+		    <tr>
+				<td align="center">{{$event.text}}</td>
+				<td align="center">{{$event.start_date|date_format:'%Y-%m-%d'}}{{if $event.is_loop}}至{{$event.end_date|date_format:'%Y-%m-%d'}}{{/if}}</td>
+				<td align="center">{{$event.start_date|date_format:'%H:%M'}}至{{$event.end_date|date_format:'%H:%M'}}</td>
+				<td align="center">{{teacherName($event.teacher)}}</td>
+				<td align="center">		
+					<a class="link" href="javascript:attendance({{$event.event}},'{{$event.text}}','{{studentName($event.student)}}')">{{if $event.courseAttended}}{{if $event.attend}}<span>出勤</span>{{elseif $event.leave}}<span>请假</span>{{elseif $event.absence}}<span>缺勤</span>{{/if}}{{else}}<span class="red">[未考勤]</span>{{/if}}</a>
+				</td>
+				<td align="center">		
+					{{if $event.courseCommented}}<a class="link" href="javascript:showcomment({{$event.event}},{{$event.student}},'{{$event.remark}}','{{studentName($event.student)}}')"><span>[已点评]</span></a>{{else}}<a class="link" href="javascript:comment({{$event.event}},{{$event.student}},'{{$event.remark}}','{{studentName($event.student)}}')"><span class="red">[未点评]</span></a>{{/if}}
+				</td>
+		    </tr>
+			{{foreachelse}}
+			<tr><td colspan=6>暂无课程数据</td></tr>
+			{{/foreach}}
+			</tbody>
+		</table>
+		<div id="pages">{{$pageEvents}}</div>	
+	</div>
+	{{elseif  $_GET.act == 2}}
+	<div id="div_setting_2" class="contentList">
+		<table width="100%" cellspacing="0" class="table-list">
+			<thead>
+				<tr>
+					<th align="left">用户</th>
+					<th>内容</th>
+					<th>附件</th>
+					<th>点评时间</th>
+				</tr>
+			</thead>
+		<tbody>
+		{{foreach $comments as $_data}}
+		    <tr>
+				<td align="left">{{if $_data.anonymous}}【匿名】{{else}}{{if $_data.character == "teacher" || $_data.character == "school"}}{{teacherName($_data.creator)}}(老师){{elseif $_data.character == "student"}}{{studentName($_data.student)}}{{relation($_data.creator,$_data.student)}}{{/if}}{{/if}}</td>
+				<td align="center" title="{{$_data.content}}">{{$_data.content|truncate:30:"...":true}}</td>
+				<td align="center">
+				{{foreach $_data.attachInfos as $attachInfo}}
+				<span class="attach link" link="{{$path.image}}{{$attachInfo.save_path}}{{$attachInfo.save_name}}">{{$attachInfo.attach_name}}</span>
+				{{/foreach}}
+				</td>
+				<td align="center">{{$_data.create_time}}</td>
+		    </tr>
+		{{foreachelse}}
+		<tr><td colspan=4>暂无点评数据</td></tr>
+		{{/foreach}}
+		</tbody>
+		</table>
+		<div id="pages">{{$pageComments}}</div>
+	</div>
+	{{elseif  $_GET.act == 3}}
+	<div id="div_setting_3" class="contentList">
+		<ul class="desList ul_content">
+			{{foreach $remarks as $remark}}
+			<li id="remark_{{$remark.id}}">&nbsp;&nbsp;&nbsp;&nbsp;{{$remark.remark}}<span onclick="delremark({{$remark.id}})"></span></li>
+			{{foreachelse}}
+			&nbsp;&nbsp;&nbsp;&nbsp;暂无
+			{{/foreach}}
+		</ul>	
+		<form name="myform" action="/school/student/remark?act=1" method="post" id="myform">
+		<table width="100%" class="table_form">
+			<tr>
+				<td style="padding: 10px 0;"><textarea name="remark" id="remark" style="width:150px;height:80px;"></textarea>
+				<input type="hidden" name="student" id="student" value="{{$student.id}}">
+				</td>
+			</tr>
+			<tr>
+				<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+				</td>
+			</tr>
+		</table>
+		</form>							
+	</div>
+	{{elseif !$_GET.act || $_GET.act == 4}}
+	<div id="div_setting_4" class="contentList">
+		<table width="100%" cellspacing="0" class="table-list">
+			<thead>
+				<tr>
+					<th>课程名称</th>
+					<th>单价（元/课次）</th>
+					<th>总课次数</th>
+					<th>已上课次</th>
+					<th>已考勤课次</th>
+					<th>未考勤课次</th>
+					<th>消费金额（元）</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody class="ul_content">
+			{{foreach $hads as $data}}
+		    <tr>
+				<td align="left"><a href="/school/student/info?student={{$student.id}}&act=1&text={{$data.text}}" class="link">{{$data.text}}</a></td>
+				<td align="center">{{if $data.fee_setting}}{{$data.fee}}{{else}}--{{/if}}</td>
+				<td align="center">{{if $data.fee_setting}}{{$data.total}}{{else}}--{{/if}}</td>
+				<td align="center">{{$data.had}}</td>
+				<td align="center">{{$data.attended}}（出勤：{{$data.attend}}&nbsp;请假：{{$data.leave}}缺勤：{{$data.absence}}）</td>
+				<td align="center">{{$data.had-$data.attended}}</td>
+				<td align="center">{{if $data.fee_setting}}{{if $data.lessed > 0}}{{$data.used}}(-{{$data.lessed}}){{else}}{{$data.used}}{{/if}}{{else}}--{{/if}}</td>
+				<td align="center">		
+					{{if $data.fee_setting}}
+					<a class="link" href="javascript:editTotalCfg({{$data.id}},{{$data.student}})">[编辑]</a>
+					<a class="link" href="javascript:confirmurl('/school/student_fee/delete?id={{$data.id}}&student={{$data.student}}','是否重置？')">[重置]</a>
+					{{else}}
+					<a class="link" href="javascript:addTotalCfg({{$student.id}},'{{$data.text}}')">[编辑]</a>
+					{{/if}}
+				</td>
+		    </tr>
+			{{foreachelse}}
+			<tr><td colspan=8>暂无学费统计数据</td></tr>
+			{{/foreach}}
+			</tbody>
+		</table>
+		<div class="student_total">
+			<p>学费统计<span class="ccc" style="margin-left:15px;">|</span></p>
+			<p>已缴费金额：<span class="yellow">{{$hadMoney}}</span>元</p>
+			<p>已消费金额：<span class="yellow">{{$usedMoney}}</span>元</p>
+			<p>剩余金额：<span class="yellow">{{if $lessedMoney > 0}}-{{$lessedMoney}}{{else}}{{$hadMoney - $usedMoney}}{{/if}}</span>元</p>
+			<p class="link" style="float:right;margin-right:10px;" onclick="fee({{$student.id}})">缴费记录</p>
+		</div>					
+	</div>
+	{{/if}}
+</div>
+</div>
+<script language="JavaScript">
+<!--
+function remark(student){
+	window.top.art.dialog({
+		id:'remark',
+		iframe:'/school/student/remark?act=1&student='+student, 
+		title:'添加学生备注', 
+		width:'300', 
+		height:'200', 
+		lock:true
+	});
+}
+function delremark(id){
+	$.ajax({
+		'type':'post',
+		'url':'/school/student/remark?act=2&id='+id, 
+		'success':function(msg){
+			if(msg == 1) $("#remark_"+id).remove();
+			else alert(msg)
+		}
+	})
+}
+function SwapTab(name,cls_show,cls_hide,cnt,cur){
+    for(i=1;i<=cnt;i++){
+		if(i==cur){
+			 $('#div_'+name+'_'+i).show();
+			 $('#tab_'+name+'_'+i).attr('class',cls_show);
+		}else{
+			 $('#div_'+name+'_'+i).hide();
+			 $('#tab_'+name+'_'+i).attr('class',cls_hide);
+		}
+	}
+	location.href='/school/student/info?student='+{{$student.id}}+'&act='+cur;
+}
+
+$(".attach").click(function(){
+	var link = $(this).attr('link');
+	window.top.art.dialog({
+		id:'attach',
+		content:"<img src='"+link+"'/>", 
+		title:'查看附件', 	
+		lock:true
+	});
+});
+
+function comment(event,student,courseName,studentName){
+	window.top.art.dialog({
+		id:'comment',
+		iframe:'/school/comment/do?isStudentInfo=1&act=1&event='+event+'&student='+student, 
+		title:'点评《'+courseName+'》-'+studentName, 
+		width:'450', 
+		height:'300', 
+		lock:true
+	});
+}
+
+function showcomment(event,student,courseName,studentName){
+	window.top.art.dialog({
+		id:'showcomment',
+		iframe:'/school/comment/info?event='+event+'&student='+student, 
+		title:'点评详情《'+courseName+'》-'+studentName, 
+		width:'600', 
+		height:'500', 
+		lock:true
+	});
+}
+
+function attendance(id,name,studentName){
+	window.top.art.dialog({
+		id:'attendance',
+		iframe:'/school/attendance/index?act=list&event='+id+'&studentName='+studentName+'&isStudentInfo=1', 
+		title:name, 
+		width:'450', 
+		height:'420', 
+		lock:true
+	});
+}
+
+function editTotalCfg(id,student){
+	window.top.art.dialog({
+		id:'editTotalCfg',
+		iframe:'/school/student_fee/edit?id='+id+'&student='+student, 
+		title:'学费设置', 
+		width:'420', 
+		height:'200', 
+		lock:true
+	});
+}
+
+function addTotalCfg(student,text){
+	window.top.art.dialog({
+		id:'addTotalCfg',
+		iframe:'/school/student_fee/add?student='+student+'&text='+text, 
+		title:'学费设置', 
+		width:'420', 
+		height:'200', 
+		lock:true
+	});
+}
+
+function fee(student){
+	window.top.art.dialog({
+		id:'fee',
+		iframe:'/school/student_money/index?student='+student, 
+		title:'缴费记录', 
+		width:'450', 
+		height:'400', 
+		lock:true
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

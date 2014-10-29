@@ -1,0 +1,107 @@
+{{include "public/header.html"}}
+<link href="{{$path.js}}uploadify/uploadify.css" rel="stylesheet" type="text/css" />
+<script src="{{$path.js}}uploadify/jquery.uploadify.min.js" language="javascript" type="text/javascript" ></script>
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#firstname").formValidator({onshow:"请输入姓",onfocus:"姓长度为2-10个字符"}).inputValidator({min:2,max:10,onerror:"姓长度为2-10个字符"});
+	$("#lastname").formValidator({onshow:"请输入名",onfocus:"名长度为2-10个字符"}).inputValidator({min:2,max:10,onerror:"名长度为2-10个字符"});
+	$("#background").formValidator({onshow:"请输入教育背景",onfocus:"教育背景长度为1-150个字"}).inputValidator({min:0,max:300,onerror:"教育背景长度为1-150个字"});
+	$("#mind").formValidator({onshow:"请输入教学理念",onfocus:"教学理念长度为1-150个字"}).inputValidator({min:0,max:300,onerror:"教学理念长度为1-150个字"});
+	var fls=flashChecker();
+	if(!fls.f){
+		$(".upfileArea").html("您的浏览器不支持flash,无法上传图片！")
+	}else{
+		$('#upfile').uploadify({
+			'formData'     : {
+				'timestamp' : '{{$timestamp}}',
+				'token'     : '{{$token}}',
+				'app'     : 'upload2',
+				'act'     : 'index',
+				'type'	  : 'avatar',
+				'uid'  : '{{$teacher.user}}'
+			},
+			
+			'fileTypeExts':'*.jpg;*.jpeg;*.png;*.gif',
+			'fileSizeLimit':2048,
+			'buttonText':'上传',
+			'multi':false,
+			'swf'      : '{{$path.js}}uploadify/uploadify.swf',
+			'uploader' : '{{$path.api}}',
+			'onSelectError' : function (file, errorCode, errorMsg) {
+			   if (errorCode == SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT){
+			    alert('超过文件上传大小限制（2M）！');
+			    return;
+			   }
+			   alert(errorObj.type + ', Error: ' + errorObj.info);
+			},
+			'onUploadSuccess' : function(file, data, response) {
+	         	var data = jQuery.parseJSON(data);
+	         	if(data.state == 1){
+	         		var avatar = '{{$path.avatar}}'+data.result.avatar;
+	         		$("#avatarArea").attr('src',avatar);
+	         	}
+	         }
+		});
+	}
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/teacher/info/index" method="post" id="myform" enctype="multipart/form-data">
+<table width="100%" class="table_form contentWrap">
+	<tr>
+	<td width=80 align="right">姓名：</td> 
+	<td><input type="text" name="info[firstname]" class="input-text ufocus" id="firstname" value="{{$teacher.firstname}}" size=2 def="姓"></input><input type="text" name="info[lastname]" class="input-text ufocus" id="lastname" value="{{$teacher.lastname}}" size=3 def="名"></input></td>
+	</tr>
+	<tr>
+	<td width=80 align="right">头像</td> 
+	<td>
+	<img id="avatarArea" class="uploadFileArea" src="{{imageUrl($teacher.user,1,50,false)}}" width=50 height=50>
+	<div class="upfileArea" style="left: 50px;position: relative;top: -50px;"><input id="upfile" name="upfile" type="file"></div>
+	<p class="content_tip">注：支持jpg,jpeg,png,gif格式的图片，大小不超过2M</p>
+	</td>
+	</tr>
+	<tr>
+	<td width=80 align="right">地域：</td> 
+	<td>
+	{{Html::selectArea($teacher.province,$teacher.city,$teacher.area,"info[province]","info[city]","info[area]")}}
+	</td>
+	</tr>
+	<tr>
+	<td width=80 align="right">教学地点：</td> 
+	<td>
+	<input type="text" name="info[address]" class="input-text" id="address" value="{{$teacher.address}}"></input>
+	</td>
+	</tr>
+	<tr>
+	<td width=80 align="right">授课内容：</td> 
+	<td>
+		<a class="link" href="/teacher/course/index">修改授课内容</a>
+	</td>
+	</tr>
+	<tr>
+	<td width=80 align="right">授课对象：</td> 
+	<td>
+	{{Html::selectTarget($teacher.target,"info[target]","info[target]")}}
+	</td>
+	</tr>
+	<tr>
+	<td width=80 align="right">教育背景：</td> 
+	<td><textarea name="info[background]" id="background" style="width:50%;height:120px;">{{$teacher.background}}</textarea></td>
+	</tr>
+	<tr>
+	<td width=80 align="right">教学理念：</td> 
+	<td><textarea name="info[mind]" id="mind" style="width:50%;height:120px;">{{$teacher.mind}}</textarea></td>
+	</tr>
+	<tr>
+	<td></td> 
+	<td><input name="dosubmit" type="submit" value="提交" class="button state_highlight"></td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

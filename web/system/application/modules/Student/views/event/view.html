@@ -1,0 +1,96 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+window.hulapai = new Array();
+window.hulapai.module = 'student';
+window.hulapai.urlEvent = "/student/event/index?is_view=1";
+window.hulapai.urlEventEdit = "/student/event/edit";
+window.hulapai.urlEventInfo = "/student/event/info";
+window.hulapai.urlComment = "/student/comment/index";
+window.hulapai.urlAttendance = "/student/attendance/index";
+</script>
+<script src="{{$path.js}}schedule/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/ext/dhtmlxscheduler_minical.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/ext/dhtmlxscheduler_dhx_terrace.js" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="{{$path.js}}schedule/dhtmlxscheduler_dhx_terrace.css" type="text/css" title="no title" charset="utf-8">
+<script src="{{$path.js}}schedule/ext/dhtmlxscheduler_year_view.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/ext/dhtmlxscheduler_readonly.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/locale_cn.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/schedule.color.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/schedule.selector.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/schedule.init.js" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="{{$path.js}}schedule/schedule.init.css" type="text/css" title="no title" charset="utf-8">
+
+<style type="text/css">
+	
+	.dhx_cal_event_line.custom, .dhx_cal_event.custom div{
+		background-color:#fd7;
+		border-color:#da6;
+		color:#444;
+	}
+	
+</style>
+<script type="text/javascript">
+	var teachers = {{$teachers|default:[]}};// // 初始老师	
+	var students ={{$students|default:[]}};// 初始学生
+	function init() {		
+		var sch = document.getElementById("scheduler_here");
+		sch.style.height = parseInt(WINHEIGHT)+"px";	
+		scheduler.customer();
+	}
+	$(document).ready(function(){	
+		$(".dhx_cal_tab[name='add_tab']").click(function(e){
+			scheduler.addEventNow(null, null, e);
+		});	
+		init();	
+		var windowHeight = document.body.offsetHeight;
+		//$("#scheduler_here").height(WINHEIGHT);
+		//$(".dhx_cal_data").height(WINHEIGHT);
+		$(".dhx_cal_tab").width(45);
+		$(".dhx_cal_tab.active").css('left','60px');
+		$(".dhx_cal_tab.dhx_cal_tab_last").css('left','106px');
+		$(".dhx_cal_tab.dhx_cal_tab_standalone").css('left','170px');		
+	});
+	function print(v)
+	{
+		if (typeof v == 'object')
+		{
+			v = Obj(v);
+		}else{
+			v = v + " " + (typeof v);
+		}
+		document.write(v);
+	}
+
+function Obj(obj)
+{
+	var result = '';
+	for (i in obj)
+	{		
+		result += i + "\t" + obj[i] + "\t" + typeof(obj[i]) + "\n";
+	}
+	return result;
+}
+
+</script>
+<div class="pad_common">
+<div class="common-form">
+	<div id="scheduler_here" class="dhx_cal_container" style='width:100%;height:400px;'>
+		<div class="dhx_cal_navline">
+			<div class="dhx_cal_prev_button">&nbsp;</div>
+			<div class="dhx_cal_next_button">&nbsp;</div>
+			<div class="dhx_cal_today_button"></div>
+			<div class="dhx_cal_date"></div>
+			<div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+			<div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>			
+			<div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+			<!--<div class="dhx_cal_tab" name="year_tab" style="right:76px;"></div>-->
+			<!-- <div class="dhx_cal_tab" name="add_tab" style="right:380px;" >添加</div> -->
+		</div>
+		<div class="dhx_cal_header">
+		</div>
+		<div class="dhx_cal_data">
+		</div>		
+	</div>
+</div>
+</div>
+{{include "public/footer.html"}}

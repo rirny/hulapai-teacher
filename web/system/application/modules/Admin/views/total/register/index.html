@@ -1,0 +1,45 @@
+{{include "public/header.html"}}
+<div class="subnav">
+	<div class="content-menu ib-a blue line-x"> 
+       	<a class="on" href="javascript:;"><em>注册</em></a><span>|</span>
+        <a href="/admin/total_register/day"><em>每日注册</em></a><span>|</span> 
+        <a href="/admin/total_register/detail"><em>明细</em></a> 
+    </div>
+</div>
+<div class="pad-lr-10">
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			来源：{{Html::selectAgent($_GET.agent,'agent','agent','来源')}}
+			<input type="submit" value="搜索" class="button search" name="search">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+	<input type="hidden" name="pc_hash" value="bLHaEA">
+</form>
+<div class="table-list">
+
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">用户总数</th>
+			<th align="left">来源</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $total as $data}}
+    <tr>
+		<td align="left">{{$data.nums}}</td>
+		<td align="left">{{if $data.agent == 0}}网站{{elseif $data.agent == 1}}手机网页版{{elseif $data.agent == 2}}android{{elseif $data.agent == 3}}ios{{/if}}</td>
+    </tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+</div>
+{{include "public/footer.html"}}

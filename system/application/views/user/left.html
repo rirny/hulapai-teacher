@@ -1,0 +1,24 @@
+<h3 class="f14"><span class="switchs cu on" title="{{$menu['name']}}"></span><p class="menu_user">个人资料</p></h3>
+<ul>
+    <li id="_MP_1_1" class="sub_menu">
+    	<a href="javascript:_MP(1,1,'/user/info');" hidefocus="true" style="outline:none;">基本资料</a>
+    </li>
+    <!-- <li id="_MP_1_2" class="sub_menu">
+    	<a href="javascript:_MP(1,2,'/user/avatar');" hidefocus="true" style="outline:none;">修改头像</a>
+    </li> -->
+</ul>
+<script type="text/javascript">
+$(".switchs").each(function(i){
+    var ul = $(this).parent().next();
+    $(this).click(
+    function(){
+        if(ul.is(':visible')){
+            ul.hide();
+            $(this).removeClass('on');
+        }else{
+            ul.show();
+            $(this).addClass('on');
+        }
+    })
+});
+</script>

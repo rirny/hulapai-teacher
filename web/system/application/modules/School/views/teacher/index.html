@@ -1,0 +1,83 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="subnav">
+    
+</div>
+<p class="content_tip">注:冻结的老师无法开课，发送通知,问卷</p>
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="text" name="teacherName" class="input-text ufocus" id="teacherName" value="{{$_GET.teacherName}}" def="老师名">
+			{{Html::select($groups,$_GET.group, 'group', 'group','分组')}}
+			{{Html::selectStatus($_GET.status, 'status', 'status','状态')}}
+			<input type="submit" value="搜索" class="button search" name="search">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+	<input type="hidden" name="pc_hash" value="bLHaEA">
+</form>
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">教师名</th>
+			<th align="left">所在组</th>
+			<th align="left">联系方式</th>
+			<th align="left">加入时间</th>
+			<th align="left">状态</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $teachers as $teacher}}
+    <tr>
+		<td align="left">{{imageUrl($teacher.teacher,1,30)}}&nbsp;<a href="javascript:teacherInfo({{$teacher.teacher}},'{{$teacher.firstname}}{{$teacher.lastname}}')" class="link">{{$teacher.firstname}}{{$teacher.lastname}}</a></td>
+		<td align="left">{{$teacher.groupNames}}</td>
+		<td align="left">{{$teacher.account}}</td>
+		<td align="left">{{$teacher.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+		<td align="left">{{if $teacher.status == 2}}<a class="red" href="/school/teacher/freeze?teacher={{$teacher.teacher}}">冻结</a>{{elseif $teacher.status == 1}}删除{{elseif $teacher.status == 0}}<a class="link" href="/school/teacher/freeze?teacher={{$teacher.teacher}}">正常</a>{{/if}}</td>
+		<td align="center">	
+			{{if $teacher.status != 1}}
+			<a href="javascript:group({{$teacher.teacher}},'{{$teacher.firstname}}{{$teacher.lastname}}')">[分组]</a>
+			<a href="javascript:confirmurl('/school/teacher/delete?teacher={{$teacher.teacher}}', '是否删除?')">[删除]</a>
+			{{/if}}
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=6>暂无老师</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+
+function group(teacher,name){
+	window.top.art.dialog({
+		id:'group',
+		iframe:'/school/teacher/group?teacher='+teacher, 
+		title:'老师分组《'+name+'》', 
+		width:'700', 
+		height:'500', 
+		lock:true
+	}, function(){
+		var d = window.top.art.dialog({
+			id:'group'
+		}).data.iframe;
+		var form = d.document.getElementById('dosubmit');
+		form.click();
+		return false;
+	}, function(){
+		window.top.art.dialog({id:'group'}).close();
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

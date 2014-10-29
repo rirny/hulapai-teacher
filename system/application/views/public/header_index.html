@@ -1,0 +1,13 @@
+{{include "public/header.html"}}
+<div class="header">
+	<div class="contenter">
+		<div class="logo lf"><a href="/user"></a></div>
+	    <div class="col-auto lf" style="overflow: visible">
+	        <ul class="nav black left_464" id="top_menu">
+	        	<li id="" class="top_menu {{if strtolower($smarty.server.REQUEST_URI) == '/login'}}on{{/if}}"><a href="/login" hidefocus="true" style="outline:none;">首页</a></li>
+	        	<li id="" class="top_menu {{if strtolower($smarty.server.REQUEST_URI) == '/download'}}on{{/if}}"><a href="/download" hidefocus="true" style="outline:none;">下载</a></li>
+	        	<li id="" class="top_menu {{if strtolower($smarty.server.REQUEST_URI) == 'index/guide'}}on{{/if}}"><a href="{{$path.domain}}index/guide" target="_blank" hidefocus="true" style="outline:none;">帮助中心</a></li>
+	        </ul>
+	    </div>
+	 </div>
+</div>

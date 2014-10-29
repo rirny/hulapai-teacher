@@ -1,0 +1,21 @@
+{{include "public/header.html"}}
+<div class="header">
+	<div class="contenter">
+		<div class="logo lf"><a href="/user"></a></div>
+		<div class="logo_line lf"></div>
+	    <div class="col-auto lf" style="overflow: visible">
+	        <ul class="nav black" id="top_menu">
+	        	<li id="" class="top_menu logo_line"></li>
+	        	{{if strtolower($smarty.server.REQUEST_URI) == '/register'}}
+	        	<li id="" class="top_menu on"><a href="/register" hidefocus="true" style="outline:none;">注册</a></li>
+	        	{{elseif strtolower($smarty.server.REQUEST_URI) == '/findpwd'}}
+	        	<li id="" class="top_menu on"><a href="/findpwd" hidefocus="true" style="outline:none;">找回密码</a></li>
+	        	{{else}}
+	        	{{foreach $MENU as $k=>$v}}
+	        	<li id="" class="top_menu {{if strtolower($smarty.server.REQUEST_URI) == '/$k'}}on{{/if}}"><a href="/{{$k}}" hidefocus="true" style="outline:none;">{{$v}}</a></li>
+	        	{{/foreach}}
+	        	{{/if}}
+	        </ul>
+	    </div>
+	 </div>
+</div>

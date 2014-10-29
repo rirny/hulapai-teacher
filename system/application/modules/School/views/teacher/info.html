@@ -1,0 +1,358 @@
+{{include "public/header.html"}}
+<style type="text/css">
+ul.parentList{display:inline-block;_zoom:1;*display:inline;vertical-align:top}
+.parentList li{width:200px;height:50px;}
+.parentList li p{float:left;width:120px;}
+.parentList li .img{width:30px;margin-top:5px;}
+.parentList li p span{display:inline-block;vertical-align:middle;margin-left:5px;}
+.desList{width:100%;height:auto;overflow:hidden;}
+.desList li{border:1px solid #CCC;padding:4px 10px;width:200px;height:20px;margin: 4px 2px;float:left; position: relative;}
+.desList li span{position: absolute;left:195px;cursor: pointer;float:right; width:8px;height:20px;display:inline-block;padding-right:10px;border-left: 1px solid #CCC; background:url('{{$path.images}}hulapai/delete_icon.png') no-repeat right;}
+.teacher_total{background: url("{{$path.images}}/hulapai/header_bg.png") repeat;margin-top:10px;height:30px;}
+.teacher_total p{float:left;line-height:30px;padding:0 8px;}
+</style>
+<div class="pad_common">
+<div class="common-form">
+	<table width="100%" class="table_form">
+		<tr>
+			<td width="150" valign="top">{{imageUrl($teacher.user,1,150)}}</td> 
+			<td width="270" valign="top">
+				<table class="table_form list">
+					<tr>
+						<td align="left">姓名：{{teacherName($teacher.user)}}({{$teacher.userInfo.hulaid}})</td> 							
+					</tr>
+					<tr>
+						<td align="left">生日：{{$teacher.userInfo.birthday}}</td> 							
+					</tr>
+					<tr>
+						<td align="left">性别：{{if $teacher.userInfo.gender == 1}}男{{elseif $teacher.userInfo.gender == 2}}女{{else}}未知{{/if}}</td> 								
+					</tr>	
+					<tr>
+						<td align="left">地址：{{Html::getArea($teacher.province,$teacher.city,$teacher.area)}}&nbsp;&nbsp;{{$teacher.address}}</td> 							
+					</tr>			
+				</table>
+			</td> 
+			<td width="300" valign="top">
+				<table class="table_form">
+					<tr>
+						<td align="left" valign="top">联系方式：{{$teacher.userInfo.account}}</td>
+					</tr>		
+				</table>
+			</td> 
+		</tr>
+	</table>
+</div>
+<div class="col-tab">
+		<ul class="tabBut cu-li">
+	            <li id="tab_setting_5" {{if !$_GET.act || $_GET.act == 5}}class="on"{{/if}} onclick="SwapTab('setting','on','',5,5);">基本信息</li>
+	            <li id="tab_setting_1" {{if $_GET.act == 1}}class="on"{{/if}} onclick="SwapTab('setting','on','',5,1);">课程</li>
+	            <!-- <li id="tab_setting_2" {{if $_GET.act == 2}}class="on"{{/if}} onclick="SwapTab('setting','on','',5,2);">评价</li> -->
+	            <li id="tab_setting_4" {{if $_GET.act == 4}}class="on"{{/if}} onclick="SwapTab('setting','on','',5,4);">点评</li>
+	            <li id="tab_setting_3" {{if $_GET.act == 3}}class="on"{{/if}} onclick="SwapTab('setting','on','',5,3);">备注</li>
+		</ul>
+	{{if $_GET.act == 1}}
+	<div id="div_setting_1" class="contentList">
+		<p class="content_tip">注:以下数据为截止至{{date('Y-m-d')}}为止的课程</p>
+		<form method="get" action="" name="searchform">
+			<table width="100%" cellspacing="0" class="search-form">
+			    <tbody>
+					<tr>
+					<td>
+					<div class="explain-col">
+					<input type="hidden" name="teacher" value="{{$teacher.user}}"/>
+					<input type="hidden" name="act" value="1"/>
+					<input type="text" name="text" class="input-text ufocus" id="text" value="{{$_GET.text}}" def="课程名称">
+					{{Html::date('start_date',$_GET.start_date,'起始日期')}}
+					{{Html::date('end_date',$_GET.end_date,'终止日期')}}
+					<input type="submit" value="搜索" class="button search" name="search">
+				</div>
+					</td>
+					</tr>
+			    </tbody>
+			</table>
+		</form>
+		<table width="100%" cellspacing="0" class="table-list">
+			<thead>
+				<tr>
+					<th>课程名称</th>
+					<th>上课日期</th>
+					<th>上课时间</th>
+					<th>学生数</th>
+					<th>点评</th>
+					<th>考勤</th>
+				</tr>
+			</thead>
+			<tbody class="ul_content">
+			{{foreach $events as $event}}
+		    <tr>
+				<td align="center">{{$event.text}}</td>
+				<td align="center">{{$event.start_date|date_format:'%Y-%m-%d'}}{{if $event.is_loop}}至{{$event.end_date|date_format:'%Y-%m-%d'}}{{/if}}</td>
+				<td align="center">{{$event.start_date|date_format:'%H:%M'}}至{{$event.end_date|date_format:'%H:%M'}}</td>
+				<td align="center">{{$event.studentNum}}</td>
+				<td align="center">		
+					<a class="link" href="javascript:listComment({{$event.event}},'{{$event.text}}')">{{if $event.commented}}<span>[已点评]</span>{{else}}<span class="red">[未点评]</span>{{/if}}</a>
+				</td>
+				<td align="center">	
+						
+					<a class="link" href="javascript:attendance({{$event.event}},'{{$event.text}}')">{{if $event.attended}}<span>[已考勤]</span>{{else}}<span class="red">[未考勤]</span>{{/if}}</a>
+				</td>
+		    </tr>
+			{{foreachelse}}
+			<tr><td colspan=6>暂无课程数据</td></tr>
+			{{/foreach}}
+			</tbody>
+		</table>
+		<div id="pages">{{$pageEvents}}</div>	
+	</div>
+	{{else if $_GET.act == 2}}
+	<div id="div_setting_2" class="contentList">
+		<table width="100%" cellspacing="0" class="table-list">
+			<thead>
+				<tr>
+					<th align="left">用户</th>
+					<th>内容</th>
+					<th>附件</th>
+					<th>点评时间</th>
+				</tr>
+			</thead>
+		<tbody>
+		{{foreach $comments as $_data}}
+		    <tr>
+				<td align="left">{{if $_data.anonymous}}【匿名】{{else}}{{if $_data.character == "teacher" || $_data.character == "school"}}{{teacherName($_data.creator)}}(老师){{elseif $_data.character == "student"}}{{studentName($_data.student)}}{{relation($_data.creator,$_data.student)}}{{/if}}{{/if}}</td>
+				<td align="center" title="{{$_data.content}}">{{$_data.content|truncate:30:"...":true}}</td>
+				<td align="center">
+				{{foreach $_data.attachInfos as $attachInfo}}
+				<span class="attach link" link="{{$path.image}}{{$attachInfo.save_path}}{{$attachInfo.save_name}}">{{$attachInfo.attach_name}}</span>
+				{{/foreach}}
+				</td>
+				<td align="center">{{$_data.create_time}}</td>
+		    </tr>
+		{{foreachelse}}
+		<tr><td colspan=4>暂无点评数据</td></tr>
+		{{/foreach}}
+		</tbody>
+		</table>
+		<div id="pages">{{$pageComments}}</div>
+	</div>
+	{{else if $_GET.act == 3}}
+	<div id="div_setting_3" class="contentList">
+		<ul class="desList ul_content">
+			{{foreach $remarks as $remark}}
+			<li id="remark_{{$remark.id}}">&nbsp;&nbsp;&nbsp;&nbsp;{{$remark.remark}}<span onclick="delremark({{$remark.id}})"></span></li>
+			{{foreachelse}}
+			&nbsp;&nbsp;&nbsp;&nbsp;暂无
+			{{/foreach}}
+		</ul>	
+		<form name="myform" action="/school/teacher/remark?act=1" method="post" id="myform">
+		<table width="100%" class="table_form">
+			<tr>
+				<td style="padding: 10px 0;"><textarea name="remark" id="remark" style="width:150px;height:80px;"></textarea>
+				<input type="hidden" name="teacher" id="teacher" value="{{$teacher.user}}">
+				</td>
+			</tr>
+			<tr>
+				<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+				</td>
+			</tr>
+		</table>
+		</form>							
+	</div>
+	{{else if $_GET.act == 4}}
+	<div id="div_setting_4" class="contentList">
+		<table width="100%" cellspacing="0" class="table-list">
+			<thead>
+				<tr>
+					<th align="left">点评用户</th>
+					<th>课程</th>
+					<th>内容</th>
+					<th>附件</th>
+					<th>点评时间</th>
+				</tr>
+			</thead>
+		<tbody>
+		{{foreach $comments as $_data}}
+		    <tr>
+				<td align="left">{{if $_data.student}}{{studentName($_data.student)}}(学生){{/if}}</td>
+				<td align="center">{{if $_data.event}}{{if $_data.eventText}}{{$_data.eventText}}{{else}}课程已删除{{/if}}{{else}}--{{/if}}</td>
+				<td align="center" title="{{$_data.content}}">{{$_data.content|truncate:30:"...":true}}</td>
+				<td align="center">
+				{{foreach $_data.attachInfos as $attachInfo}}
+				<span class="attach link" link="{{$path.image}}{{$attachInfo.save_path}}{{$attachInfo.save_name}}">{{$attachInfo.attach_name}}</span>
+				{{/foreach}}
+				</td>
+				<td align="center">{{$_data.create_time}}</td>
+		    </tr>
+		{{foreachelse}}
+		<tr><td colspan=4>暂无点评数据</td></tr>
+		{{/foreach}}
+		</tbody>
+		</table>
+		<div id="pages">{{$pageComments}}</div>
+	</div>
+	{{elseif !$_GET.act || $_GET.act == 5}}
+	<div id="div_setting_5" class="contentList">
+		<table width="100%" cellspacing="0" class="table-list">
+			<thead>
+				<tr>
+					<th>课程名称</th>
+					<th>总课次数</th>
+					<th>已上课次</th>
+					<th>已考勤课次</th>
+					<th>已上课时</th>
+					<th>未上课次</th>
+					<th>学生出勤率</th>
+					<th>点评（次）</th>
+					<th>回复（次）</th>
+					<th>薪酬（元/课次）</th>
+					<th>薪酬（合）</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody class="ul_content">
+			{{if $hads}}
+			{{$total=0}}
+			{{$had=0}}
+			{{$unhad=0}}
+			{{$attended=0}}
+			{{$classes=0}}
+			{{$comments=0}}
+			{{$replies=0}}
+			{{$money=0}}
+			{{foreach $hads as $data}}
+		    <tr>
+				<td align="left"><a href="/school/teacher/info?teacher={{$teacher.user}}&act=1&text={{$data.text}}" class="link">{{$data.text}}</a></td>
+				<td align="center">{{if $data.fee_setting}}{{$total = $total + $data.total}}{{$data.total}}{{else}}--{{/if}}</td>
+				<td align="center">{{$had = $had + $data.had}}{{$data.had}}</td>
+				<td align="center">{{$attended = $attended + $data.attended}}{{$data.attended}}</td>
+				<td align="center">{{$classes = $classes + $data.classes}}{{$data.classes}}</td>
+				<td align="center">{{if $data.fee_setting}}{{$unhad = $unhad + $data.total - $data.had}}{{$data.total - $data.had}}{{else}}--{{/if}}</td>
+				<td align="center">{{if $data.attend && $data.studentNums}}{{($data.attend/$data.studentNums*100)|string_format:"%.1f"}}{{else}}0{{/if}}%</td>
+				<td align="center">{{$comments = $comments + $data.comments}}{{$data.comments}}</td>
+				<td align="center">{{$replies = $replies + $data.replies}}{{$data.replies}}</td>
+				<td align="center">{{if $data.fee_setting}}{{$data.fee}}{{else}}--{{/if}}</td>
+				<td align="center">{{if $data.fee_setting}}{{$money = $money + $data.fee * $data.attended}}{{$data.fee * $data.attended}}{{else}}--{{/if}}</td>
+				<td align="center">		
+					{{if $data.fee_setting}}
+					<a class="link" href="javascript:editTotalCfg({{$data.id}},{{$data.teacher}})">[编辑]</a>
+					<a class="link" href="javascript:confirmurl('/school/teacher_fee/delete?id={{$data.id}}&teacher={{$data.teacher}}','是否重置？')">[重置]</a>
+					{{else}}
+					<a class="link" href="javascript:addTotalCfg({{$teacher.user}},'{{$data.text}}')">[编辑]</a>
+					{{/if}}
+				</td>
+		    </tr>
+			{{/foreach}}
+			<tr style="background: url('{{$path.images}}/hulapai/header_bg.png') repeat;">
+				<td align="left">总计</td>
+				<td align="center">{{if $total}}{{$total}}{{else}}--{{/if}}</td>
+				<td align="center">{{if $had}}{{$had}}{{else}}--{{/if}}</td>
+				<td align="center">{{if $attended}}{{$attended}}{{else}}--{{/if}}</td>
+				<td align="center">{{if $classes}}{{$classes}}{{else}}--{{/if}}</td>
+				<td align="center">{{if $unhad}}{{$unhad}}{{else}}--{{/if}}</td>
+				<td align="center">--</td>
+				<td align="center">{{$comments}}</td>
+				<td align="center">{{$replies}}</td>
+				<td align="center">--</td>
+				<td align="center">{{if $money}}{{$money}}{{else}}--{{/if}}</td>
+				<td align="center">		
+					
+				</td>
+		    </tr>
+		    {{else}}
+			<tr><td colspan=12>暂无课程统计数据</td></tr>
+		    {{/if}}
+			</tbody>
+		</table>		
+	</div>
+	{{/if}}
+</div>
+</div>
+<script language="JavaScript">
+<!--
+function remark(teacher){
+	window.top.art.dialog({
+		id:'remark',
+		iframe:'/school/teacher/remark?act=1&teacher='+teacher, 
+		title:'添加学生备注', 
+		width:'300', 
+		height:'200', 
+		lock:true
+	});
+}
+function delremark(id){
+	$.ajax({
+		'type':'post',
+		'url':'/school/teacher/remark?act=2&id='+id, 
+		'success':function(msg){
+			if(msg == 1) $("#remark_"+id).remove();
+			else alert(msg)
+		}
+	})
+}
+function SwapTab(name,cls_show,cls_hide,cnt,cur){
+    for(i=1;i<=cnt;i++){
+		if(i==cur){
+			 $('#div_'+name+'_'+i).show();
+			 $('#tab_'+name+'_'+i).attr('class',cls_show);
+		}else{
+			 $('#div_'+name+'_'+i).hide();
+			 $('#tab_'+name+'_'+i).attr('class',cls_hide);
+		}
+	}
+	location.href='/school/teacher/info?teacher='+{{$teacher.user}}+'&act='+cur;
+}
+
+$(".attach").click(function(){
+	var link = $(this).attr('link');
+	window.top.art.dialog({
+		id:'attach',
+		content:"<img src='"+link+"'/>", 
+		title:'查看附件', 	
+		lock:true
+	});
+});
+
+function attendance(id,name){
+	window.top.art.dialog({
+		id:'attendance',
+		iframe:'/school/attendance/index?act=list&event='+id, 
+		title:name, 
+		width:'450', 
+		height:'420', 
+		lock:true
+	});
+}
+function listComment(id,name){
+	window.top.art.dialog({
+		id:'list',
+		iframe:'/school/comment/index?act=list&event='+id, 
+		title:name, 
+		width:'800', 
+		height:'420', 
+		lock:true
+	});
+}
+
+function editTotalCfg(id,teacher){
+	window.top.art.dialog({
+		id:'editTotalCfg',
+		iframe:'/school/teacher_fee/edit?id='+id+'&teacher='+teacher, 
+		title:'薪酬设置', 
+		width:'420', 
+		height:'200', 
+		lock:true
+	});
+}
+
+function addTotalCfg(teacher,text){
+	window.top.art.dialog({
+		id:'addTotalCfg',
+		iframe:'/school/teacher_fee/add?teacher='+teacher+'&text='+text, 
+		title:'薪酬设置', 
+		width:'420', 
+		height:'200', 
+		lock:true
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

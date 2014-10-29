@@ -1,0 +1,55 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="table-list">
+<form name="myform" action="/school/student/doApply?act=1" method="post" id="myform">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left"><input type="checkbox" value="" name="checkAll" class="checkAll" rel="id[]"/></th>
+			<th align="left">学生名</th>
+			<th align="left">申请时间</th>
+			<th align="left">消息</th>
+			<th align="left">状态</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $applys as $apply}}
+    <tr>
+		<td align="left"><input type="checkbox" value="{{$apply.id}}" name="id[]"/></td>
+		<td align="left">{{imageUrl($apply.student,2,30)}}&nbsp;{{studentName($apply.student)}}</td>
+		<td align="left">{{$apply.create_time}}</td>
+		<td align="left">{{$apply.message}}</td>
+		<td align="left">{{if $apply.status == 2}}拒绝{{elseif $apply.status == 0}}未处理{{/if}}</td>
+		<td align="center">	
+			<a href="/school/student/doApply?id={{$apply.id}}&act=1">[通过]</a>
+			<a href="/school/student/doApply?id={{$apply.id}}&act=2">[拒绝]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=6>暂无学生申请消息</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+    <div class="bk15"></div>
+    <input name="dosubmit" type="submit" value="通过" class="button">
+    <input name="dosubmit" type="submit" value="拒绝" class="button"  onclick="document.myform.action='/school/student/doApply?act=2'">
+</form>
+<div id="pages">{{$pages}}</div>
+</div>
+</div>
+<script language="JavaScript">
+<!--
+function add(){
+	window.top.art.dialog({
+		id:'add',
+		iframe:'/school/student/add', 
+		title:'添加学生', 
+		width:'580', 
+		height:'200',
+		lock:true
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

@@ -1,0 +1,44 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){},onsuccess:function(){
+		var create_time = $("#create_time").val();
+		if(!create_time){
+			alert('请选择缴费时间！');
+			return false;
+		}
+	}});
+	$("#money").formValidator({onshow:"请输入缴费金额",onfocus:"缴费金额必须在1-20000之间"}).inputValidator({type:"number",min:1,max:20000,onerror:"总课次必须在1-20000之间"});
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/school/student_money/add?student={{$_GET.student}}" method="post" id="myform">
+<table width="100%" class="table_form">
+	<tr>
+		<td width="80" align="right">学生：</td> 
+		<td>{{studentName($_GET.student)}}
+		</td>
+	</tr>
+	<tr>
+		<td width="80" align="right">缴费金额：</td> 
+		<td><input type="text" name="money"  class="input-text" id="money" value="" size=5>元
+		</td>
+	</tr>
+	<tr>
+		<td width="80" align="right">缴费时间：</td> 
+		<td>{{Html::date('create_time','','',1)}}
+		</td>
+	</tr>
+	<tr>
+		<td></td> 
+		<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+		</td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

@@ -1,0 +1,93 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="subnav">
+    <div class="content-menu ib-a link line-x">
+        <a class="add fb" href="javascript:add();"><em>添加班级</em></a>
+    </div>
+</div>
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">班级名称</th>
+			<th>学生数</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $grades as $grade}}
+    <tr>
+		<td align="left">{{$grade.name}}</td>
+		<td align="center">{{$grade.num}}</td>
+		<td align="center">	
+			<!--<a href="javascript:manage('{{$grade.id}}')">[添加学生]</a>--> <A href="javascript:;" onclick="student('{{$grade.id}}')" name="selectStudent" num="0" type="button" id="selectStudent">[添加学生]</A>
+			<a href="javascript:edit('{{$grade.id}}')">[修改名称]</a>	
+			<a href="javascript:confirmurl('/school/grade/delete?id={{$grade.id}}', '是否删除?')">[删除]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=3>暂无班级</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+function add(){
+	window.top.art.dialog({
+		id:'add',
+		iframe:'/school/grade/add', 
+		title:'添加班级', 
+		width:'500', 
+		height:'150', 
+		lock:true
+	});
+}
+function edit(id){
+	window.top.art.dialog({
+		id:'edit',
+		iframe:'/school/grade/edit?id='+id, 
+		title:'修改班级', 
+		width:'500', 
+		height:'150', 
+		lock:true
+	});
+}
+function manage(id){
+	window.top.art.dialog({
+		id:'manage',
+		iframe:'/school/grade_student/index?id='+id, 
+		title:'班级管理', 
+		width:'700', 
+		height:'500', 
+		lock:true
+	});
+}
+
+function student(grade){	
+	window.top.art.dialog({
+		id:"student",
+		iframe:"/public/selectStudent?school={{$school}}&event=0&gradeEdit=" + grade, 
+		title:"选择学生", 
+		width:window.top.document.body.offsetWidth-100, 
+		height:window.top.document.body.offsetHeight-150,
+		lock:true
+	}, function(){
+		var d = window.top.art.dialog({
+			id:"student"
+		}).data.iframe;		
+		var form = d.document.getElementById("dosubmit");
+		form.click();
+		window.location.reload();
+		return false;		
+	}, function(){
+		window.top.art.dialog({id:"student"}).close();
+	});
+}
+
+//-->
+</script>
+{{include "public/footer.html"}}

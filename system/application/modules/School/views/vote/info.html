@@ -1,0 +1,74 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+{{if $_GET['type'] == 1}}
+<link href="{{$path.js}}vote/vote.css" rel="stylesheet" type="text/css" />
+<script src="{{$path.js}}vote/vote.js" language="javascript" type="text/javascript" ></script>
+<style type="text/css">
+.vote_title{width:100px;}
+</style>
+<script type="text/javascript">
+<!--
+$(function(){
+	$("#vote_result").study_vote({{$data}});
+});
+//-->
+</script>
+
+<div class="common-form">
+<table width="100%" class="table_form">
+	<tr>
+		<td width="120" align="right">标题：</td> 
+		<td>{{$vote.title}}
+		</td>
+	</tr>
+	<tr>
+		<td width="120" align="right">投票结果：</td> 
+		<td id="vote_result">
+		</td>
+	</tr>
+</table>
+</div>
+{{elseif $_GET['type'] == 2}}
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="hidden" name="id" value="{{$_GET.id}}">
+			<input type="hidden" name="type" value="{{$_GET.type}}">
+			{{Html::select($optionDatas,{{$_GET.option}}, 'option', 'option','选项')}}
+			<input type="submit" value="搜索" class="button search" name="search">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+	<input type="hidden" name="pc_hash" value="bLHaEA">
+</form>
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">用户</th>
+			<th align="left">选项</th>
+			<th align="left">投票时间</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $voteRecords as $voteRecord}}
+    <tr>
+		<td align="left">{{if $voteRecord.character =="teacher"}}{{teacherName($voteRecord.user)}}(老师){{elseif $voteRecord.character =="student"}}{{studentName($voteRecord.student)}}{{relation($voteRecord.user,$voteRecord.student)}}{{elseif $voteRecord.character =="user"}}{userName($voteRecord.user)}}{{/if}}</td>
+		<td align="left">{{$optionDatas[$voteRecord.option]}}</td>
+		<td align="left">{{$voteRecord.create_time}}</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=4>暂无投票记录</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+{{/if}}
+</div>
+{{include "public/footer.html"}}

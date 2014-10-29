@@ -1,0 +1,86 @@
+{{include "public/header.html"}}
+<style>
+<!--
+#vote_option{width:600px;}
+#vote_option p{display:block;margin:5px 0;}
+#vote_option p span{position: relative; right: 4%;}
+#vote_option .delOption{cursor: pointer;}
+#addOption{position: absolute;right:218px;top:240px;*top:245px;cursor: pointer;}
+@media screen and (-webkit-min-device-pixel-ratio:0){
+#addOption{top:250px;}	
+}
+.vote_option{width:350px;}
+-->
+</style>
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){},onsuccess:function(){
+		var start_time = $("#start_time").val();
+        var end_time = $("#end_time").val();
+        if(!start_time || !end_time) return '问卷开始和结束时间必须设置';
+        if(end_time <= start_time){
+        	alert('问卷结束时间必须大于开始时间');
+        	return false;
+        }
+	}});
+	$("#title").formValidator({onshow:"请输入问题",onfocus:"问题长度为2-150个字"}).inputValidator({min:2,max:300,onerror:"问题长度为2-150个字"});
+	$("#multi").formValidator({onshow:"请选择类型",onfocus:"请选择类型"}).inputValidator({min:1,max:2,onerror:"请选择类型"});
+	$("#addOption").click(function(){
+		if($(".vote_option").length >= 5){
+			alert('投票选项最多5项');
+			return false;
+		}
+		$(this).parent().append($('<p><input type="text" name="option[]"  class="input-text vote_option" id="option[]"><span><img onclick="del(this)" class="delOption" src="{{$path.images}}hulapai/delete.png"/></span></p>'));
+	});
+});
+function del(t){
+	if($(".vote_option").length > 2){
+		$(t).parent().parent().remove();
+	}
+}
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/school/vote/edit" method="post" id="myform">
+<table width="100%" class="table_form">
+	<tr>
+		<td width="120" align="right">问题：</td> 
+		<td><textarea name="title" id="title" style="width:60%;height:50px;">{{$vote.title}}</textarea>
+		</td>
+	</tr>
+	<tr>
+		<td width="120" align="right">类型：</td> 
+		<td>{{Html::select($multis,$vote.multi,'multi','multi')}}
+		</td>
+	</tr>
+	<tr>
+		<td width="120" align="right">开始时间：</td> 
+		<td>{{Html::date('start_time',$vote.start_time|date_format:'%Y-%m-%d %H:%M:%S','',1)}}
+		</td>
+	</tr>
+	<tr>
+		<td width="120" align="right">结束时间：</td> 
+		<td>{{Html::date('end_time',$vote.end_time|date_format:'%Y-%m-%d %H:%M:%S','',1)}}
+		</td>
+	</tr>
+	<tr valign="top">
+		<td width="120" align="right">选项：</td> 
+		<td id="vote_option">
+			<img id="addOption" src="{{$path.images}}hulapai/add.png"/>
+			{{foreach $options as $option}}
+			<p><input type="text" name="option[{{$option.id}}]"  class="input-text vote_option" id="option[]" value="{{$option.title}}"><span><img onclick="del(this)" class="delOption" src="{{$path.images}}hulapai/delete.png"/></span></p>
+			{{/foreach}}
+		</td>
+	</tr>
+	<tr>
+		<td width="120" align="right"><input type="hidden" name="id" value="{{$vote.id}}"/></td> 
+		<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+		</td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

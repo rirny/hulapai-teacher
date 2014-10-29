@@ -1,0 +1,61 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="subnav">
+    <div class="content-menu ib-a link line-x">
+        <a class="add fb" href="javascript:add();"><em>添加授课内容</em></a>
+    </div>
+</div>
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">序号</th>
+			<th align="left">课程名称</th>
+			<th>课程分类</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $courseList as $k=>$course}}
+    <tr>
+		<td align="left">{{$k+1}}</td>
+		<td align="left">{{$course.title}}</td>
+		<td align="center">{{$course.typeName}}</td>
+		<td align="center">	
+			<a href="javascript:edit('{{$course.id}}')">[修改]</a>	
+			<a href="javascript:confirmurl('/teacher/course/delete?id={{$course.id}}', '是否删除?')">[删除]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=3>暂无授课内容</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+function add(){
+	window.top.art.dialog({
+		id:'add',
+		iframe:'/teacher/course/add', 
+		title:'添加授课内容', 
+		width:'500', 
+		height:'150', 
+		lock:true
+	});
+}
+function edit(id){
+	window.top.art.dialog({
+		id:'edit',
+		iframe:'/teacher/course/edit?id='+id, 
+		title:'修改授课内容', 
+		width:'500', 
+		height:'150', 
+		lock:true
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

@@ -1,0 +1,28 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#name").formValidator({onshow:"请输入班级名称",onfocus:"班级名称长度为2-20个字符"}).inputValidator({min:2,max:20,onerror:"班级名称长度为2-20个字符"});
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/school/grade/edit" method="post" id="myform">
+<table width="100%" class="table_form">
+	<tr>
+		<td width=80 align="right">班级名称：</td> 
+		<td><input type="text" name="name"  class="input-text" id="name" value="{{$grade.name}}">
+		</td>
+	</tr>
+	<tr>
+		<td><input type="hidden" name="id" value="{{$grade.id}}"/></td> 
+		<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+		</td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

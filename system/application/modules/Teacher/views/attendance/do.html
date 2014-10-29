@@ -1,0 +1,35 @@
+{{include "public/header_common.html"}}
+<style>
+.attendanceArea span{clear:both;float: left;padding: 8px 15px;}
+</style>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/teacher/attendance/do?act=3" method="post" id="myform">
+	<table width="100%" class="table_form">
+		<tr>
+			<td></td> 
+			<td><span class="attendanceArea">
+				<span><input type="radio" name="attendance" class="doattendance" value="1">&nbsp;&nbsp;出勤</span>
+				<span><input type="radio" name="attendance" class="doattendance" value="2">&nbsp;&nbsp;缺勤</span>
+				<span><input type="radio" name="attendance" class="doattendance" value="3">&nbsp;&nbsp;请假</span>
+			</span>
+			</td>
+		</tr>
+		<tr>
+			<td width="50">
+				<input type="hidden" name="event" value="{{$event}}"/>
+				<input type="hidden" name="act" value="{{$act}}"/>
+				{{foreach $datas as $event=>$students}}
+	    			{{foreach $students as $id=>$student}}
+	    			<input type="hidden" name="datas[{{$event}}][{{$id}}]" value="{{$student}}"/>
+	    			{{/foreach}}
+	    		{{/foreach}}
+    		</td> 
+			<td><input name="dosubmit" type="submit" id="dosubmit" value="确定" class="button state_highlight">
+			</td>
+		</tr>
+	</table>
+</form>
+</div>
+</div>
+{{include "public/footer_common.html"}}

@@ -1,0 +1,53 @@
+{{include "public/header_index.html"}}
+<script language="javascript" type="text/javascript" src="{{$path.js}}jquery.carouFredSel.js"></script>
+<div id="content" class="contenter">
+	<div class="content_center product_show lf">
+		<div id="product_content" style="width:230px;height:350px;">
+			<img src="{{$path.images}}hulapai/product_1.png"/>
+			<img src="{{$path.images}}hulapai/product_2.png"/>
+			<img src="{{$path.images}}hulapai/product_3.png"/>
+		</div>
+		<div id="product_radio" style="margin-top:20px;"></div>
+	</div>
+    <div class="content_center product_desc lf">
+		<p class="top">呼啦派，全新的学习方式</p>
+		<p>多种教务管理功能</p>
+		<p>课时、学费自动统计</p>
+		<p>朋友分享、咨信传播</p>
+		<a href="/download"><img src="{{$path.images}}hulapai/download.png"/></a>
+		<img src="{{$path.images}}hulapai/download_2.png"/ id="2wm_down">
+	</div>
+	<div id="2wm" style="display:none;"><img src="{{$path.images}}hulapai/2wm.png"/></div>
+	<div class="content_center login">
+		<form action="/login" method="post" name="myform" id="myform">
+		<div id="login_form">
+	 	 <p class="top"><label>登录呼啦派</label><label style="float:right"><a href="/register">免费注册</a></label></p>
+	 	 <p><label>用户名</label></p>
+	 	 <p><input name="username" type="text" class="input-text" value=""/></p>
+	 	 <p><label>登录密码</label><label style="float:right;margin-right:15px;"><a href="/findpwd"  style="color:#999;">忘记密码?</a></label></p>
+	 	 <p><input name="password" type="password" class="input-text" value=""/></p>
+	 	 <p></p>
+	 	 <p><input name="dosubmit" value="" type="submit" class="login_tj_btn" /></p>
+	 	 </div>
+     </form>
+	</div>
+</div>
+<script type="text/javascript"> 
+$(function(){
+	$("#product_content").carouFredSel({
+		circular: true,
+		infinite: true,
+		auto 	: true,
+		pagination	: "#product_radio"
+	});
+	$("#2wm_down").click(function(){
+		window.top.art.dialog({
+			id:'2wm',
+			content:$("#2wm")[0], 
+			title:'二维码下载', 	
+			lock:true
+		});
+	});
+});
+</script>
+{{include "public/footer.html"}}

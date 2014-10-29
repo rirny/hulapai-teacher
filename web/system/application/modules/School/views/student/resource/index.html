@@ -1,0 +1,155 @@
+{{include "public/header.html"}}
+<style>
+	input.multi{padding:2px 4px;}
+</style>
+<script>
+function dosort(type){
+	var sorts = $("input[name='sorts']").val();
+	if(sorts.indexOf(type) >= 0){
+		if(sorts.indexOf('desc') >= 0){
+			sorts = type+' asc';
+		}else{
+			sorts = type+' desc';
+		}	
+	}else{
+		sorts = type+' desc';
+	}
+	$("input[name='sorts']").val(sorts);
+	$("#searchform").submit();
+}
+</script>
+
+<div class="pad_common">
+<div class="subnav">
+    <div class="content-menu ib-a link line-x">
+        <a class="add fb" href="/school/student_resource/add"><em>添加学生资源</em></a>    
+    </div>
+</div>
+<form method="get" action="" name="searchform" id="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="hidden" name="sorts" class="input-text" id="sorts" value="{{$_GET.sorts}}">
+			<input type="text" name="studentName" class="input-text ufocus" id="studentName" value="{{$_GET.studentName}}" def="学生名">
+			{{Html::selectGender($_GET.gender, 'gender', 'gender','性别')}}
+			{{Html::selectStudentResource($_GET.source, 'source', 'source','来源')}}
+			<select name="status">
+				<option value="-1" {{if isset($_GET.status)}}selected="selected"{{/if}} >全部</option>
+				<option value="0" {{if $_GET.status ===0}}selected="selected"{{/if}}>未转正</option>
+				<option value="1" {{if $_GET.status ==1}}selected="selected"{{/if}}>已转正</option>
+			</select>
+			<input type="submit" value="搜索" class="button search" name="search">
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+</form>
+
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th width="20"><input type="checkbox" name="chkAll" onclick="checkAll(this)"/></th>
+			<th align="left"><a class="link" href="javascript:dosort('name')">学生名</a></th>
+			<th align="left"><a class="link" href="javascript:dosort('gender')">性别</a></th>
+			<th align="left"><a class="link" href="javascript:dosort('birthday')">年龄</a></th>
+			<th align="left">家长</th>
+			<th align="left"><a class="link" href="javascript:dosort('source')">来源</a></th>
+			<th align="left"><a class="link" href="javascript:dosort('modify_time')">更新时间</a></th>
+			<th align="left"><a>状态</a></th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $students as $student name=student}}
+    <tr>
+		<td><input type="checkbox" name="chkid" value="{{$student.id}}" /></td>
+		<td align="left">{{$student.name}}</td>
+		<td align="left">{{if $student.gender == 1}}男{{elseif $student.gender == 2}}女{{else}}未知{{/if}}</td>
+		<td align="left">{{$student.age}}</td>	
+		<td align="left">
+			{{if !empty($student.parents)}}
+			{{foreach $student.parents key=key item=item}}
+				{{$item.mobile}}{{if $item.relation == 1}}本人{{elseif $item.relation==2}}爸爸{{elseif $item.relation==3}}妈妈{{else}}家长{{/if}}{{if $smarty.foreach.student.total > 1 && !$smarty.foreach.student.last}}<br/>{{/if}}
+			{{/foreach}}
+			{{else}}--{{/if}}
+		</td>
+		<td align="left">{{if $student.source == 0}}招生{{elseif $student.source == 1}}活动{{elseif $student.source == 2}}其他{{else}}未知{{/if}}</td>
+		<td align="left">{{$student.modify_time}}</td>	
+		<td align="left">{{if $student.status}}<font color="green">已转正</font>{{else}}<a href="javascript:doit('sign', '{{$student.id}}', 1)"><font color="blue">转正</font></a>{{/if}}</td>	
+		<td align="center">	
+
+			<a href="/School/student_resource/edit?id={{$student.id}}">[修改]</a>
+			<a href="javascript:doit('delete', '{{$student.id}}', 1)">[删除]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=4>暂无学生资源</td></tr>
+{{/foreach}}
+</tbody>
+<tfoot>
+	<td colspan="3">
+		<input type="button" name="sign" value="批量转正" class="multi" />
+		<input type="button" name="delete" value="批量删除" class="multi" /></td><td colspan="5"><div id="pages">记录数：{{$records}} {{$pages}}</div>
+	</td>
+</tfoot>
+</table>
+</div>
+
+</div>
+<script language="JavaScript">
+<!--
+
+function checkAll(o){
+	if( o.checked == true ){
+		$('input[name="chkid"]').attr('checked','true');		
+	}else{
+		$('input[name="chkid"]').removeAttr('checked');
+	}
+}
+
+function getChecked() {
+	var uids = new Array();
+	$.each($('tbody input:checked'), function(i, n){
+		uids.push( $(n).val() );
+	});
+	return uids;
+}
+
+$(function(){	
+	$(".multi").click(function(){
+		var students = getChecked();
+		var action = $(this).attr('name');
+		if(students.length < 1) {art.dialog({width:300,content:"请选择至少一名学生！"},function(){}); return false;}
+		doit(action,students.join(","), 1);
+	});
+});
+
+function doit(action, id, firm){
+	var title = '删除';
+	if(action == 'sign') title = '转正';
+	if(firm && !confirm('确认' +　title))
+	{
+		return false;
+	}
+	var ids = id.split(",");	
+	$.post('/school/student_resource/do', {'id':ids,'action':action}, function(data)
+	{		
+		if(data.state)
+		{
+			if(action == 'sign')
+			{
+				art.dialog({width: 300,content:'转正成功，新生成的家长账户，初始密码默认为<font color="red">"000000"</font>'}, function(){window.location.reload();});				
+			}else{
+				art.dialog({width: 300,content:data.message},function(){window.location.reload();});
+			}			
+		}else{
+			art.dialog({width: '300',content: data.message});				
+		}	
+	}, 'json');
+}
+//-->
+</script>
+{{include "public/footer.html"}}

@@ -1,0 +1,149 @@
+{{include "public/header.html"}}
+<script language="javascript">
+function dosort(type){
+	var sorts = $("#sorts").val();
+	if(sorts.indexOf(type) >= 0){
+		if(sorts.indexOf('desc') >= 0){
+			sorts = type+' asc';
+		}else{
+			sorts = type+' desc';
+		}
+	}else{
+		sorts = type+' desc';
+	}
+	$("#sorts").val(sorts);
+	$("#searchform").submit();
+}
+function doattendance(type){
+	if(type == 1){
+		$('input[value="attend"]').attr("checked",true);
+	}else if(type == 2){
+		$('input[value="absence"]').attr("checked",true);
+	}else if(type == 3){
+		$('input[value="leave"]').attr("checked",true);
+	}else{
+		alert('参数错误！');
+		return false;
+	}
+	
+	document.myform.action='/school/attendance/do?attendance='+type;
+	
+}
+</script>
+<div class="pad_common">
+{{if $_GET.act != "list"}}
+<p class="content_tip">注:以下数据为截止至{{date('Y-m-d')}}为止的考勤</p>
+{{/if}}
+<form method="get" action="" name="searchform" id="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="hidden" name="act" value="{{$_GET.act}}">
+			<input type="hidden" name="event" value="{{$_GET.event}}">
+			{{if $_GET.act == "list"}}
+			<input type="text" name="studentName" class="input-text ufocus" id="studentName" value="{{$_GET.studentName}}" def="学生名">
+			{{Html::selectAttendances($_GET.attendance, 'attendance', 'attendance','出勤状态')}}
+			{{else}}
+			{{Html::selectAttended($_GET.attended, 'attended', 'attended','考勤状态')}}
+			{{Html::select($schoolCourses,$_GET.course, 'course', 'course','授课内容')}}
+			<input type="text" name="text" class="input-text ufocus" id="text" value="{{$_GET.text}}" def="课程名称">
+			{{Html::select($teachers,$_GET.teacher, 'teacher', 'teacher','老师')}}
+			{{Html::date('start_date',$_GET.start_date,'起始日期')}}
+			{{Html::date('end_date',$_GET.end_date,'终止日期')}}
+			<input type="hidden" name="sorts" class="input-text" id="sorts" value="{{$sorts}}">
+			{{/if}}
+			<input type="submit" value="搜索" class="button search" name="search">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+	<input type="hidden" name="pc_hash" value="bLHaEA">
+</form>
+<div class="table-list">
+{{if $_GET.act == "list"}}
+<form name="myform" action="/school/attendance/do" method="post" id="myform">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">学生名</th>
+			<th>出勤</th>
+			<th>缺勤</th>
+			<th>请假</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $data as $_data}}
+    <tr {{if !$_data.attended}}class="red"{{/if}}>
+		<td align="left">{{imageUrl($_data.student,2,30)}}&nbsp;{{studentName($_data.student)}}<input type="hidden" value="{{$_data.id}}" name="id[]"/></td>
+		<td align="center"><input type="radio" name="attendance[{{$_data.id}}]" {{if $_data.attend == 1}}checked=checked{{/if}} value="attend">&nbsp;出勤&nbsp;</td>
+		<td align="center"><input type="radio" name="attendance[{{$_data.id}}]" {{if $_data.absence == 1}}checked=checked{{/if}} value="absence">&nbsp;缺勤&nbsp;</td>
+		<td align="center"><input type="radio" name="attendance[{{$_data.id}}]" {{if $_data.leave == 1}}checked=checked{{/if}} value="leave">&nbsp;请假&nbsp;</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=7>暂无考勤数据</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+    <div class="bk15"></div>
+    <input type="hidden" name="isStudentInfo" value="{{$_GET.isStudentInfo}}">
+    <input type="hidden" name="event" value="{{$_GET.event}}">
+    <button class="button" onclick="doattendance(1);return false;">全部出勤</button>
+    <button class="button" onclick="doattendance(2);return false;">全部缺勤</button>
+    <button class="button" onclick="doattendance(3);return false;">全部请假</button>
+    <input name="dosubmit" type="submit" value="提交" class="button" style="float:right;">
+</form>
+{{else}}
+<table width="100%" cellspacing="0" >
+	<thead>
+		<tr>
+			<th><a class="link" href="javascript:dosort('course')">授课内容</a></th>
+			<th><a class="link" href="javascript:dosort('text')">课程名称</a></th>
+			<th><a class="link" href="javascript:dosort('start_date')">上课日期</a></th>
+			<th><a class="link" href="javascript:dosort('start_date')">上课时间</a></th>
+			<th><a class="link" href="javascript:dosort('teacher')">上课老师</a></th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $events as $event}}
+    <tr>
+		<td align="center">{{$event.courseName}}</td>
+		<td align="center">{{$event.text}}</td>
+		<td align="center">{{$event.start_date|date_format:'%Y-%m-%d'}}{{if $event.is_loop}}至{{$event.end_date|date_format:'%Y-%m-%d'}}{{/if}}</td>
+		<td align="center">{{$event.start_date|date_format:'%H:%M'}}至{{$event.end_date|date_format:'%H:%M'}}</td>
+		<td align="left">
+		{{foreach $event.teacher as $teacher}}
+		{{imageUrl($teacher,1,30)}}&nbsp;{{teacherName($teacher)}}
+		{{/foreach}}
+		</td>
+		<td align="center">		
+			<a href="javascript:attendance({{$event.id}},'{{$event.courseName}}')">{{if $event.attended}}<span>[已考勤]</span>{{else}}<span class="red">[未考勤]</span>{{/if}}</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=6>暂无课程数据</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+<script language="JavaScript">
+<!--
+function attendance(id,name){
+	window.top.art.dialog({
+		id:'attendance',
+		iframe:'/school/attendance/index?act=list&event='+id, 
+		title:name, 
+		width:'450', 
+		height:'420', 
+		lock:true
+	});
+}
+//-->
+</script>
+{{/if}}
+<div id="pages">{{$pages}}</div>
+</div>
+</div>
+{{include "public/footer.html"}}

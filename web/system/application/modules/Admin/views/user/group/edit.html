@@ -1,0 +1,36 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#name").formValidator({
+		onshow:"请输入用户组名",
+		onfocus:"用户组名应该为2-20位之间"
+		}).inputValidator({
+			min:2,
+			max:20,
+			onerror:"用户组名应该为2-20位之间"
+		})
+	};
+);
+//-->
+</script>
+<div class="pad-10">
+<div class="common-form">
+<form name="myform" action="/admin/user_group/edit" method="post" id="myform">
+<fieldset>
+	<legend>基本信息</legend>
+	<table width="100%" class="table_form">
+		<tr>
+			<td width="120">用户组名</td> 
+			<td><input type="text" name="info[name]"  class="input-text" id="name" value="{{$group.name}}"></td>
+		</tr>
+	</table>
+</fieldset>
+    <div class="bk15"></div>
+    <input name="gid" type="hidden" value="{{$group.gid}}">
+    <input name="dosubmit" type="submit" id="dosubmit" value="确定" class="dialog">
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

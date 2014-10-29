@@ -1,0 +1,112 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="col-tab">
+<ul class="tabBut_ts cu-li">
+           <li id="tab_setting_1" {{if $c == 'message' && $type == '1'}}class="on"{{/if}} onclick="message(1);">通知</li>
+           <li id="tab_setting_2" {{if $c == 'message' && $type == '2'}}class="on"{{/if}} onclick="message(2);">问卷调查</li>
+           <li id="tab_setting_3" {{if $c == 'apply'}}class="on"{{/if}} onclick="message(3);">申请</li>
+</ul>
+{{if $c == 'message' && $type == '1'}}
+<div id="message_1" class="contentList">
+{{foreach $messages as $message}}
+<ul class="message_ts">
+	<li class="logo">{{if $message.school}}{{imageUrl($message.school,3,50)}}{{else}}{{imageUrl($message.from,1,50)}}{{/if}}</li>
+	<li class="content"><p class="black">{{schoolName($message.school)}}</p><p>{{$message.content}}</p></li>
+	<li class="date"><p class="black2">{{$message.create_time|date_format:'%Y-%m-%d %H:%M'}}<p></li>
+</ul>  
+{{foreachelse}}
+<ul class="message_ts">
+<li>暂无通知消息</li>
+</ul>
+{{/foreach}}
+</div>  
+{{elseif $c == 'message' && $type == '2'}}
+<div id="message_2" class="contentList">
+{{foreach $messages as $message}}
+<ul class="message_ts">
+	<li class="logo">{{if $message.school}}{{imageUrl($message.school,3,50)}}{{else}}{{imageUrl($message.from,1,50)}}{{/if}}</li>
+	<li class="content"><p class="black">{{schoolName($message.school)}}</p><p class="link" style="cursor: pointer;" onclick="vote({{$message.source.id}})">{{$message.source.title}}</p></li>
+	<li class="date"><p class="black2">{{$message.create_time|date_format:'%Y-%m-%d %H:%M'}}<p></li>
+</ul>  
+{{foreachelse}}
+<ul class="message_ts">
+<li>暂无问卷调查</li>
+</ul>  
+{{/foreach}}
+</div>
+{{elseif $c == 'apply'}}
+<div id="message_3" class="contentList">
+{{foreach $applys as $apply}}
+<ul class="message_ts">
+	<li class="logo">{{if $apply.type == 3 || $apply.type == 7}}{{imageUrl($apply.from,3,50)}}{{else}}{{imageUrl($apply.from,1,50)}}{{/if}}</li>
+	<li class="content"><p class="black">{{if $apply.type == 3 || $apply.type == 7}}{{schoolName($apply.from)}}{{else}}{{userName($apply.from)}}{{/if}}</p><p class="link" style="cursor: pointer;" onclick="doapply({{$apply.id}},'{{applyContent($apply.type,$apply.from,$apply.student)}}')">{{applyContent($apply.type,$apply.from,$apply.student)}}</p></li>
+	<li class="date"><p class="black2">{{$apply.create_time|date_format:'%Y-%m-%d %H:%M'}}<p></li>
+</ul>  
+{{foreachelse}}
+<ul class="message_ts">
+<li>暂无申请</li>
+</ul>  
+{{/foreach}}
+</div>
+{{/if}}
+<div id="pages">{{$pages}}</div>	
+</div>
+<script language="JavaScript">
+<!--
+function message(type){
+	if(type == 3) location.href='/teacher/apply/index';
+	else if(type == 0 || type == 1 || type == 2)location.href='/teacher/message/index?type='+type;
+}
+function vote(id){
+	window.top.art.dialog({
+		id:'vote',
+		iframe:'/teacher/vote/info?id='+id, 
+		title:'问卷详情', 
+		width:'700', 
+		height:'400', 
+		lock:true
+	});
+}
+function doapply(id,content){
+	window.top.art.dialog({
+		id:'apply',
+		content:content, 
+		title:'是否同意', 
+		lock:true
+	},function(){
+		$.ajax({
+			type:'post',
+			url:'/teacher/apply/do',
+			data:'id='+id+'&status=1',
+			success:function(data){
+				if(data=="1"){
+					alert("加入机构成功")
+					location.reload();
+				}else{
+					alert(data)
+				}
+			}
+		});
+		window.top.art.dialog({id:'apply'}).close();
+	}, function(){
+		/*
+		$.ajax({
+			type:'post',
+			url:'/teacher/apply/do',
+			data:'id='+id+'&status=2',
+			success:function(data){
+				if(data=="1"){
+					location.reload();
+				}else{
+					alert(data)
+				}
+			}
+		});
+		*/
+		window.top.art.dialog({id:'apply'}).close();
+	});
+}
+//-->
+</script>
+</div>
+{{include "public/footer.html"}}

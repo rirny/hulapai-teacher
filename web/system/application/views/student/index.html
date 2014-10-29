@@ -1,0 +1,45 @@
+{{include "public/header_main.html"}}
+	<div id="content" class="contenter">
+		<div id="studentList" class="content_center lf"  style="height:360px;">
+			<h5>学生档案</h5>
+			<ul>
+				{{foreach $datas as $key=>$data}}
+				<li>
+					<div class="mystudent">
+						<p class="avatar">{{imageUrl($data.id,2,100)}}</p>
+						<p class="info">
+							<span class="name">{{$data.name}}</span>
+							<span>性别：{{if $data.gender == 1}}男{{elseif $data.gender == 2}}女{{/if}}</span>
+							<span>生日：{{$data.brithday}}</span>
+							<span>关系：{{if $data.relation == 1}}本人{{elseif $data.relation == 2}}爸爸{{elseif $data.relation == 3}}妈妈{{elseif $data.relation == 4}}家长{{/if}}</span>
+						</p>
+						<p class="student_manage" id="{{$data.id}}"><a class="event" href="/student?id={{$data.id}}&act=/Student/Event/View"><span>课程表</span></a><a class="attendance" href="/student?id={{$data.id}}&act=/Student/Attendance/Index"><span>考勤</span></a><a class="comment" href="/student?id={{$data.id}}&act=/Student/Comment/Index"><span>点评</span></a></p>
+					</div>
+				</li>
+				{{/foreach}}
+				{{if count($datas) < 3}}
+				<li>
+					<div class="mystudent" style="border-color:#17b2fb;">
+						<p class="student_add"><img src='{{$path.images}}hulapai/add_school.png' width="26" height="26"/></p>
+						<p class="student_add_link"><a href="/student/add">创建学生档案</a></p>
+					</div>
+				</li>
+				{{/if}}
+			</ul>
+			<div id="pages">{{$pages}}</div>
+		</div>
+		
+	</div>	
+<script type="text/javascript"> 
+$(".mystudent").click(function(){
+	if($(this).children(".student_manage").length > 0){
+		var id = $(this).children(".student_manage").attr('id');
+		var url = '/student?id='+id+'&act=/Student/Info/Index';
+	}else{
+		var url = $(this).children(".student_add_link").children("a").attr('href'); 
+	}
+	window.location.href = url;
+});
+</script>
+
+{{include "public/footer.html"}}

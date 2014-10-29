@@ -1,0 +1,33 @@
+<div class="col-left left_menu_ts">
+<div id="leftMain">
+	<ul>
+	    <li id="_MP_1_1" class="menu_ts_info{{if strtolower($smarty.server.REQUEST_URI) == '/student/info/index'}}_on{{/if}} sub_menu">
+	    	<a href="/student/info/index" style="outline:none;">个人资料</a>
+	    </li>
+	    <li id="_MP_1_2" class="menu_ts_event{{if strtolower($smarty.server.REQUEST_URI) == '/student/event/view'}}_on{{/if}} sub_menu">
+	    	<a href="/student/event/view" style="outline:none;">课程表</a>
+	    </li>
+	    <li id="_MP_1_3" class="menu_ts_comment{{if strtolower($smarty.server.REQUEST_URI) == '/student/comment/index'}}_on{{/if}} sub_menu">
+	    	<a href="/student/comment/index" style="outline:none;">点评</a>
+	    </li>
+	    <li id="_MP_1_4" class="menu_ts_attendance{{if strtolower($smarty.server.REQUEST_URI) == '/student/attendance/index'}}_on{{/if}} sub_menu">
+	    	<a href="/student/attendance/index" style="outline:none;">考勤</a>
+	    </li>
+	</ul>
+</div>
+</div>
+<script type="text/javascript">
+$(".switchs").each(function(i){
+    var ul = $(this).parent().next();
+    $(this).click(
+    function(){
+        if(ul.is(':visible')){
+            ul.hide();
+            $(this).removeClass('on');
+        }else{
+            ul.show();
+            $(this).addClass('on');
+        }
+    })
+});
+</script>

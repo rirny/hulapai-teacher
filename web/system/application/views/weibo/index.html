@@ -1,0 +1,26 @@
+{{include "public/header_index.html"}}
+<div id="content" class="contenter">
+	<div class="cms_content">
+		<h3 class="qa">呼啦派官方微博</h3>
+		<div class="description">
+			<ul class="feedList">
+				{{foreach $feeds as $key=>$item}}
+				<li>
+					<div style="width:100%;overflow:hidden;">
+						<div class="feedAvatar">{{$logo}}</div>
+						<div class="feedContent">{{$item.content}}</div>
+					</div>
+					{{if $item.attachs}}
+						<div class="attachs">
+						{{foreach $item.attachs as $a=>$attach}}
+						<div class="attach"><img src="{{$path.image}}{{$attach.attach_url}}" width="100"/></div>
+						{{/foreach}}
+						</div>
+					{{/if}}										
+				</li>
+				{{/foreach}}
+			</ul>
+		</div>
+	</div>
+</div>
+{{include "public/footer.html"}}

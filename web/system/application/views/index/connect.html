@@ -1,0 +1,8 @@
+{{if !$source}}{{include "public/header_index.html"}}{{/if}}
+<div id="content" class="contenter">
+	<div class="cms_content">
+		<h3 class="qa">{{$result.title}}</h3>
+		<div class="description">{{$result.content}}</div>
+	</div>
+</div>
+{{if !$source}}{{include "public/footer.html"}}{{/if}}

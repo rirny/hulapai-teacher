@@ -1,0 +1,60 @@
+{{include "public/header_right.html"}}
+<link href="{{$path.js}}uploadify/uploadify.css" rel="stylesheet" type="text/css" />
+<script src="{{$path.js}}uploadify/jquery.uploadify.min.js" language="javascript" type="text/javascript" ></script>
+<script type="text/javascript">
+<!--
+$(function(){
+	var fls=flashChecker();
+	if(!fls.f){
+		$(".upfileArea").html("您的浏览器不支持flash,无法上传图片！")
+	}else{
+		$('#upfile').uploadify({
+			'formData'     : {
+				'timestamp' : '{{$timestamp}}',
+				'token'     : '{{$token}}',
+				'app'     : 'upload2',
+				'act'     : 'index',
+				'type'	  : 'avatar',
+				'uid'  : '{{$id}}'
+			},
+			
+			'fileTypeExts':'*.jpg;*.jpeg;*.png;*.gif',
+			'fileSizeLimit':2048,
+			'buttonText':'上传',
+			'multi':false,
+			'swf'      : '{{$path.js}}uploadify/uploadify.swf',
+			'uploader' : '{{$path.api}}',
+			'onSelectError' : function (file, errorCode, errorMsg) {
+			   if (errorCode == SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT){
+			    alert('超过文件上传大小限制（2M）！');
+			    return;
+			   }
+			   alert(errorObj.type + ', Error: ' + errorObj.info);
+			},
+			'onUploadSuccess' : function(file, data, response) {
+	         	var data = jQuery.parseJSON(data);
+	         	if(data.state == 1){
+	         		var avatar = '{{$path.avatar}}'+data.result.avatar;
+	         		$("#avatarArea").attr('src',avatar);
+	         	}
+	         }
+		});
+	}
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<table width="100%" class="table_form contentWrap">
+	<tr>
+	<td width=120 align="right">用户头像</td> 
+	<td>
+	<img id="avatarArea" class="uploadFileArea" src="{{imageUrl($id,1,50,false)}}" width=50 height=50>
+	<div class="upfileArea" style="left: 50px;position: relative;top: -50px;"><input id="upfile" name="upfile" type="file"></div>
+	<p class="content_tip">注：支持jpg,jpeg,png,gif格式的图片，大小不超过2M</p>
+	</td>
+	</tr>
+</table>
+</div>
+</div>
+{{include "public/footer_right.html"}}

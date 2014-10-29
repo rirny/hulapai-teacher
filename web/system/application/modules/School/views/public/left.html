@@ -1,0 +1,27 @@
+{{foreach $menus as $menu}}
+<h3 class="f14"><span class="switchs cu on" title="{{$menu['name']}}"></span><p class="school_menu school_menu_{{$menu['id']}}">{{$menu['name']}}</p></h3>
+<ul>
+    {{foreach $menu['childrens'] as $_key=>$_menu}}
+    <li id="_MP_{{$menu['id']}}_{{$_menu['id']}}" class="sub_menu">
+    	<a href="javascript:_MP('{{$menu['id']}}','{{$_menu['id']}}','{{if $_menu['module'] && $_menu['module'] != 'Index'}}/{{$_menu['module']}}{{/if}}/{{$_menu['controller']}}/{{$_menu['action']}}');" link="{{if $_menu['module'] && $_menu['module'] != 'Index'}}/{{$_menu['module']}}{{/if}}/{{$_menu['controller']}}/{{$_menu['action']}}" hidefocus="true" style="outline:none;">{{$_menu['name']}}</a>
+    </li>
+    {{foreachelse}}
+    {{/foreach}} 
+</ul>
+{{foreachelse}}
+{{/foreach}}
+<script type="text/javascript">
+$(".switchs").each(function(i){
+    var ul = $(this).parent().next();
+    $(this).click(
+    function(){
+        if(ul.is(':visible')){
+            ul.hide();
+            $(this).removeClass('on');
+        }else{
+            ul.show();
+            $(this).addClass('on');
+        }
+    })
+});
+</script>

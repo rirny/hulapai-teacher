@@ -1,0 +1,73 @@
+{{include "public/header.html"}}
+<script language="javascript">
+function dosort(type){
+	var sorts = $("#sorts").val();
+	if(sorts.indexOf(type) >= 0){
+		if(sorts.indexOf('desc') >= 0){
+			sorts = type+' asc';
+		}else{
+			sorts = type+' desc';
+		}
+	}else{
+		sorts = type+' desc';
+	}
+	$("#sorts").val(sorts);
+	$("#searchform").submit();
+}
+</script>
+<div class="pad_common">
+<p class="content_tip">注:以下数据为截止至{{date('Y-m-d',strtotime('-1 day'))}}为止的统计结果</p>
+<form method="get" action="" name="searchform"  id="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="text" name="studentName" class="input-text ufocus" id="studentName" value="{{$_GET.studentName}}" def="学生名">
+			{{Html::select($schoolCourses,$_GET.course, 'course', 'course','授课内容')}}
+			{{Html::date('start_date',$_GET.start_date,'起始日期')}}
+			{{Html::date('end_date',$_GET.end_date,'终止日期')}}
+			<input type="hidden" name="sorts" class="input-text" id="sorts" value="{{$sorts}}">
+			<input type="submit" value="搜索" class="button search" name="search">
+			<input type="submit" value="导出" class="button search" name="export">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+</form>
+<div class="table-list">
+<table width="100%" cellspacing="0" >
+	<thead>
+		<tr>
+			<th>学生</th>
+			<th>授课内容</th>
+			<th><a class="link" href="javascript:dosort('event_nums')">课次数</a></th>
+			<th><a class="link" href="javascript:dosort('classes')">课时数</a></th>
+			<th><a class="link" href="javascript:dosort('attend')">出勤数</a></th>
+			<th><a class="link" href="javascript:dosort('absence')">缺勤数</a></th>
+			<th><a class="link" href="javascript:dosort('`leave`')">请假数</a></th>
+			<th>未考勤数</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $students as $student}}
+    <tr>
+		<td align="left"><a href="javascript:studentInfo({{$student.student}},'{{studentName($student.student)}}')" class="link">{{imageUrl($student.student,2,30)}}&nbsp;{{studentName($student.student)}}</a></td>
+		<td align="center">{{if $student.courseName}}{{$student.courseName}}{{else}}--{{/if}}</td>
+		<td align="center">{{if $student.event_nums}}{{$student.event_nums}}{{else}}0{{/if}}</td>
+		<td align="center">{{if $student.classes}}{{$student.classes}}{{else}}0{{/if}}</td>
+		<td align="center">{{if $student.attend}}{{$student.attend}}{{else}}0{{/if}}</td>
+		<td align="center">{{if $student.absence}}{{$student.absence}}{{else}}0{{/if}}</td>
+		<td align="center">{{if $student.leave}}{{$student.leave}}{{else}}0{{/if}}</td>
+		<td align="center">{{if ($student.event_nums - $student.attend - $student.absence - $student.leave) > 0}}<p class="red">{{$student.event_nums - $student.attend - $student.absence - $student.leave}}</p>{{else}}0{{/if}}</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=7>暂无记录</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+{{include "public/footer.html"}}

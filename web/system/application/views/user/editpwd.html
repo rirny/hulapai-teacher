@@ -1,0 +1,36 @@
+{{include "public/header_right.html"}}
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#oldpassword").formValidator({onshow:"请输入旧密码",onfocus:"长度为6-16个字符"}).inputValidator({min:6,max:16,onerror:"长度为6-16个字符"});
+	$("#password").formValidator({onshow:"请输入新密码",onfocus:"长度为6-16个字符"}).inputValidator({min:6,max:16,onerror:"长度为6-16个字符"}).compareValidator({desid:"oldpassword",operateor:"!=",datatype:"string",onerror:"新旧密码不能一致"});
+	$("#repassword").formValidator({onshow:"请输入确认密码",onfocus:"长度为6-16个字符"}).inputValidator({min:6,max:16,onerror:"长度为6-16个字符"}).compareValidator({desid:"password",operateor:"=",datatype:"string",onerror:"两次密码必须一致"});
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/user/editPwd" method="post" id="myform">
+<table width="100%" class="table_form contentWrap">
+	<tr>
+	<td width=120 align="right">旧密码：</td> 
+	<td><input type="password" name="oldpassword" class="input-text" id="oldpassword" value=""></input></td>
+	</tr>
+	<tr>
+	<td align="right">新密码：</td> 
+	<td><input type="password" name="password" class="input-text" id="password" value=""></input></td>
+	</tr>
+	<tr>
+	<td align="right">确认密码：</td> 
+	<td><input type="password" name="repassword" class="input-text" id="repassword" value=""></input></td>
+	</tr>
+	<tr>
+	<td align="right"></td> 
+	<td><input name="dosubmit" type="submit" value="保存" class="button state_highlight"></td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer_right.html"}}

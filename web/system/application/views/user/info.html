@@ -1,0 +1,107 @@
+{{include "public/header_right.html"}}
+<link href="{{$path.js}}uploadify/uploadify.css" rel="stylesheet" type="text/css" />
+<script src="{{$path.js}}uploadify/jquery.uploadify.min.js" language="javascript" type="text/javascript" ></script>
+<script type="text/javascript">
+<!--
+$(function(){
+	$.formValidator.initConfig({autotip:true,formid:"myform",onerror:function(msg){}});
+	$("#nickname").formValidator({onshow:"请输入昵称",onfocus:"长度为2-20个字符"}).inputValidator({min:0,max:10,onerror:"长度为2-20个字符"});
+	$("#sign").formValidator({onshow:"请输入个性签名",onfocus:"长度为1-30个字"}).inputValidator({min:0,max:60,onerror:"长度为1-30个字"});
+	var fls=flashChecker();
+	if(!fls.f){
+		$(".upfileArea").html("您的浏览器不支持flash,无法上传图片！")
+	}else{
+		$('#upfile').uploadify({
+			'formData'     : {
+				'timestamp' : '{{$timestamp}}',
+				'token'     : '{{$token}}',
+				'app'     : 'upload2',
+				'act'     : 'index',
+				'type'	  : 'avatar',
+				'uid'  : '{{$id}}'
+			},
+			
+			'fileTypeExts':'*.jpg;*.jpeg;*.png;*.gif',
+			'fileSizeLimit':2048,
+			'buttonText':'上传',
+			'multi':false,
+			'swf'      : '{{$path.js}}uploadify/uploadify.swf',
+			'uploader' : '{{$path.api}}',
+			'onSelectError' : function (file, errorCode, errorMsg) {
+			   if (errorCode == SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT){
+			    alert('超过文件上传大小限制（2M）！');
+			    return;
+			   }
+			   alert(errorObj.type + ', Error: ' + errorObj.info);
+			},
+			'onUploadSuccess' : function(file, data, response) {
+	         	var data = jQuery.parseJSON(data);
+	         	if(data.state == 1){
+	         		var avatar = '{{$path.avatar}}'+data.result.avatar;
+	         		$("#avatarArea").attr('src',avatar);
+	         	}
+	         }
+		});
+	}
+	
+});
+//-->
+</script>
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/user/info" method="post" id="myform">
+
+<table width="100%" class="table_form contentWrap">
+	<tr>
+	<td width=120 align="right"></td> 
+	<td>
+	<p class="content_tip">注:基本资料是注册用户个人的相关信息</p>
+	</td>
+	</tr>
+	<tr>
+	<td width=120 align="right">用户头像</td> 
+	<td>
+	<img id="avatarArea" class="uploadFileArea" src="{{imageUrl($id,1,50,false)}}" width=50 height=50>
+	<div class="upfileArea" style="left: 55px;position: relative;top: -50px;"><input id="upfile" name="upfile" type="file"></div>
+	<p class="content_tip">注：支持jpg,jpeg,png,gif格式的图片，大小不超过2M</p>
+	</td>
+	</tr>
+	<tr>
+	<td width=120 align="right">呼啦号：</td> 
+	<td>{{if $userInfo.setting.hulaid}}{{$userInfo.hulaid}}&nbsp;&nbsp;<cite class="yellow">注：只能修改一次，已修改</cite>{{else}}<input type="text" name="hulaid" class="input-text" id="hulaid" value="{{$userInfo.hulaid}}"></input>&nbsp;&nbsp;<cite class="red">注：只能修改一次</cite>{{/if}}</td>
+	</tr>
+	<tr>
+	<td width=120 align="right">用户名：</td> 
+	<td>{{$userInfo.account}}&nbsp;<a href="/user/editPwd" class="link">修改密码</a></td>
+	</tr>
+	<tr>
+	<td align="right">昵称：</td> 
+	<td><input type="text" name="nickname" class="input-text" id="nickname" value="{{$userInfo.nickname}}"></input></td>
+	</tr>
+	<tr>
+	<td align="right">地区：</td> 
+	<td>{{Html::selectArea($userInfo.province,$userInfo.city,$userInfo.area,"province","city","area")}}
+	</td>
+	</tr>
+	<tr>
+	<td align="right">详细地址：</td> 
+	<td><input type="text" name="address" class="input-text" id="address" value="{{$userInfo.address}}"></input>
+	</td>
+	</tr>
+	<tr>
+	<td align="right">生日：</td> 
+	<td>{{Html::date('birthday',$userInfo.birthday)}}</td>
+	</tr>
+	<tr>
+	<td align="right">个性签名：</td> 
+	<td><textarea name="sign" id="sign" style="width:50%;height:120px;">{{$userInfo.sign}}</textarea></td>
+	</tr>
+	<tr>
+	<td align="right"></td> 
+	<td><input name="dosubmit" type="submit" value="保存" class="button state_highlight"></td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer_right.html"}}

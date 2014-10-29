@@ -1,0 +1,68 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="text" name="remark" class="input-text ufocus" id="text" value="{{$_GET.remark}}" def="课程名称">
+			{{Html::date('start_date',$_GET.start_date,'起始日期')}}
+			{{Html::date('end_date',$_GET.end_date,'终止日期')}}
+			{{Html::selectAttendances($_GET.attendance, 'attendance', 'attendance','出勤状态')}}
+			<input type="submit" value="搜索" class="button search" name="search">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+	<input type="hidden" name="pc_hash" value="bLHaEA">
+</form>
+<div class="table-list">
+<table width="100%" cellspacing="0" >
+	<thead>
+		<tr>
+			<th>课程名称</th>
+			<th>上课日期</th>
+			<th>上课时间</th>
+			<th>上课老师</th>
+			<th>状态</th>
+		</tr>
+	</thead>
+<tbody>
+{{$attend = 0}}
+{{$absence = 0}}
+{{$leave = 0}}
+{{$attended = 0}}
+{{$unattended = 0}}
+{{foreach $events as $event}}
+    <tr>
+		<td align="center"><a class="link" href="/student/event/info?id={{$event.event}}">{{$event.remark}}</a></td>
+		<td align="center">{{$event.start_date|date_format:'%Y-%m-%d'}}{{if $event.is_loop}}至{{$event.end_date|date_format:'%Y-%m-%d'}}{{/if}}</td>
+		<td align="center">{{$event.start_date|date_format:'%H:%M'}}至{{$event.end_date|date_format:'%H:%M'}}</td>
+		<td align="left">{{imageUrl($event.teacher,1,30)}}&nbsp;{{teacherName($event.teacher)}}</td>
+		<td align="center">		
+			{{if $event.attended}}
+			{{$attend = $attend+$event.attend}}
+			{{$absence = $absence+$event.absence}}
+			{{$leave = $leave+$event.leave}}
+			{{$attended = $attended + 1}}
+			{{if $event.attend == 1}}<span>出勤</span>{{elseif $event.absence == 1}}<span class="yellow">缺勤</span>{{elseif $event.leave == 1}}<span class="red">请假</span>{{/if}}
+			{{else}}
+			{{$unattended = $unattended + 1}}
+			<span class="red">未考勤</span>
+			{{/if}}
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=6>暂无课程数据</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+<div style="margin-top:2px;">
+已考勤(&nbsp;出勤：<span class="yellow">{{$attend}}</span>&nbsp;缺勤：<span class="yellow">{{$absence}}</span>&nbsp;请假：<span class="yellow">{{$leave}}</span>&nbsp;)&nbsp;未考勤(&nbsp;<span class="red">{{$unattended}}</span>&nbsp;)
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+</div>
+{{include "public/footer.html"}}

@@ -1,0 +1,20 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="common-form">
+<form name="myform" action="/public/authCode" method="post" id="myform" enctype="multipart/form-data">
+<table width="100%" class="table_form contentWrap">
+	<tr>
+	<td width=120 align="right">输入授权码</td> 
+	<td>
+	<input name="authCode" id="authCode" type="authCode" class="input-text" value=""/>
+	</td>
+	</tr>
+	<tr>
+	<td align="right"></td> 
+	<td><input name="dosubmit" type="submit" value="确认" class="button state_highlight"></td>
+	</tr>
+</table>
+</form>
+</div>
+</div>
+{{include "public/footer.html"}}

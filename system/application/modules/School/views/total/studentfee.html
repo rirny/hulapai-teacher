@@ -1,0 +1,63 @@
+{{include "public/header.html"}}
+<script language="javascript">
+function dosort(type){
+	var sorts = $("#sorts").val();
+	if(sorts.indexOf(type) >= 0){
+		if(sorts.indexOf('desc') >= 0){
+			sorts = type+' asc';
+		}else{
+			sorts = type+' desc';
+		}
+	}else{
+		sorts = type+' desc';
+	}
+	$("#sorts").val(sorts);
+	$("#searchform").submit();
+}
+</script>
+<div class="pad_common">
+<form method="get" action="" name="searchform"  id="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="text" name="studentName" class="input-text ufocus" id="studentName" value="{{$_GET.studentName}}" def="学生名">
+			缴费金额&nbsp;<input type="text" name="money_start" class="input-text" id="money_start" value="{{$_GET.money_start}}" size=5>&nbsp;至&nbsp;<input type="text" name="money_end" class="input-text" id="money_end" value="{{$_GET.money_end}}" size=5>
+			<input type="hidden" name="sorts" class="input-text" id="sorts" value="{{$sorts}}">
+			<input type="submit" value="搜索" class="button search" name="search">
+			<input type="submit" value="导出" class="button search" name="export">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+</form>
+<div class="table-list">
+<table width="100%" cellspacing="0" >
+	<thead>
+		<tr>
+			<th>学生</th>
+			<th><a class="link" href="javascript:dosort('money')">已缴费金额(元)</a></th>
+			<th><a class="link" href="javascript:dosort('used')">已消费金额(元)</a></th>
+			<th><a class="link" href="javascript:dosort('balance')">剩余金额(元)</a></th>
+			
+		</tr>
+	</thead>
+<tbody>
+{{foreach $students as $student}}
+    <tr>
+		<td align="left"><a href="javascript:studentInfo({{$student.student}},'{{studentName($student.student)}}')" class="link">{{imageUrl($student.student,2,30)}}&nbsp;{{studentName($student.student)}}</a></td>
+		<td align="center">{{$student.money}}</td>
+		<td align="center">{{$student.used}}</td>
+		<td align="center">{{if $student.balance < 0}}<p class="red">{{$student.balance}}</p>{{else}}{{$student.balance}}{{/if}}</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=7>暂无记录</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+{{include "public/footer.html"}}

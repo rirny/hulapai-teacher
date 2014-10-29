@@ -1,0 +1,247 @@
+{{include "public/header.html"}}
+<script language="javascript">
+function dosort(type){
+	var sorts = $("#sorts").val();
+	if(sorts.indexOf(type) >= 0){
+		if(sorts.indexOf('desc') >= 0){
+			sorts = type+' asc';
+		}else{
+			sorts = type+' desc';
+		}
+	}else{
+		sorts = type+' desc';
+	}
+	$("#sorts").val(sorts);
+	$("#searchform").submit();
+}
+</script>
+<div class="pad_common" {{if $childEvent}}style="padding:0;"{{/if}}>
+{{if !$childEvent}}
+<form method="get" action="" name="searchform" id="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			{{Html::select($schoolCourses,$_GET.course, 'course', 'course','授课内容')}}
+			<input type="text" name="text" class="input-text ufocus" id="text" value="{{$_GET.text}}" def="课程名称">
+			{{Html::select($teachers,$_GET.teacher, 'teacher', 'teacher','全部老师')}}
+			{{Html::date('start_date',$_GET.start_date,'起始日期')}}
+			{{Html::date('end_date',$_GET.end_date,'终止日期')}}
+			<input type="hidden" name="sorts" class="input-text" id="sorts" value="{{$sorts}}">
+			<input type="submit" value="搜索" class="button search" name="search">
+			<input type="submit" value="导出" class="button search" name="export">
+		</div>
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+</form>
+{{else}}
+<script language="javascript">
+var parent = {{$parents}};
+var childs = new Array();
+
+function getChilds(rec, length, start, end)
+{
+	if(!start || !end && !rec || !rec) return ;
+	var recStr = rec.split("#");
+	var recArr = recStr.split("_");
+	var result = new Array();
+	start = strtotime(start);
+	end = strtotime(end);
+	if(recArr[0] == 'day')
+	{
+		while(start < end)
+		{
+			if(recStr[1] >0 && result.length == recStr[1]) continue;
+			var _end = start + length;
+			result.push({
+				'start_date' : timetostr(start),
+				'end_date'   : timetostr(_end),
+				'length'	 : length
+			});
+			start += recArr[1] * 86400;
+		}
+	}else if(recArr[0] == 'week'){
+		var week_day = recArr[4].split(",");
+		for (i=0; i<week_day.length; i++)
+		{
+			var _start = '';
+			while (end > _start)
+			{
+				if(recStr[1] >0 && result.length == recStr[1]) continue;
+				var _end = _start + length;
+				result.push({
+					'start_date' : timetostr(start),
+					'end_date'   : timetostr(_end),
+					'length'	 : length
+				});
+				_start += (recArr[1] * 7) * 86400;
+			}
+		}
+	}
+}
+
+function timetoUTC(datetime)
+{
+	var tmp_datetime = datetime.replace(/:/g,'-'); 
+    tmp_datetime = tmp_datetime.replace(/ /g,'-'); 
+    var arr = tmp_datetime.split("-");
+	if(arr.length < 6)
+	{
+		for(var i=arr.length; i> arr.length-1; i--)
+		{
+			arr[i] = 0;
+		}
+	}
+	return new Date(Date.UTC(arr[0],arr[1]-1,arr[2],arr[3]-8,arr[4],arr[5])); 	
+}
+
+function strtotime(datetime){ 
+	var utc = timeToUtc(datetime);
+    return parseInt(utc.getTime()/1000); 
+} 
+  
+function timetostr(unix) { 
+    var now = new Date(parseInt(unix) * 1000); 
+    return now.toLocaleString().replace(/年|月/g, "-").replace(/日/g, " "); 
+}
+
+function getWeek(datetime)
+{
+	var utc = timeToUtc(datetime);
+	return utc.getDay();
+}
+
+function week(start, step)
+{
+	var w = getWeek(start);
+
+}
+</script>
+{{/if}}
+<form name="myform" action="/school/event/delete" method="post" id="myform">
+<div class="table-list">
+<table width="100%" cellspacing="0" >
+	<thead>
+		<tr>
+			{{if $childEvent}}<th><input type="checkbox" value="" name="checkAll" class="checkAll" rel="id[]"/></th>{{/if}}
+			<th>{{if !$childEvent}}<a class="link" href="javascript:dosort('course')">授课内容</a>{{else}}授课内容{{/if}}</th>
+			<th>{{if !$childEvent}}<a class="link" href="javascript:dosort('text')">课程名称</a>{{else}}课程名称{{/if}}</th>
+			<th>{{if !$childEvent}}<a class="link" href="javascript:dosort('start_date')">上课日期</a>{{else}}上课日期{{/if}}</th>
+			<th>{{if !$childEvent}}<a class="link" href="javascript:dosort('start_date')">上课时间</a>{{else}}上课时间{{/if}}</th>
+			<th>{{if !$childEvent}}<a class="link" href="javascript:dosort('teacher')">上课老师</a>{{else}}上课老师{{/if}}</th>
+			<th>课次总数</th>
+			<th></th>
+		</tr>
+	</thead>
+<tbody>
+{{$nowTime = date('Y-m-d H:i:s')}}
+{{foreach $events as $event}}
+    <tr>
+		{{if $childEvent}}<td align="center"><input type="checkbox" value="{{$event.id}}" name="id[]"/></td>{{/if}}
+		<td align="center">{{$event.courseName}}</td>
+		<td align="center" {{if $event.is_loop}}class="link" onclick="childEvent({{$event.id}},'{{$event.text}}')"{{/if}}>{{$event.text}}</td>
+		<td align="center">{{$event.start_date|date_format:'%Y-%m-%d'}}{{if $event.is_loop}}至{{$event.end_date|date_format:'%Y-%m-%d'}}{{/if}}</td>
+		<td align="center">{{$event.start_date|date_format:'%H:%M'}}至{{$event.end_date|date_format:'%H:%M'}}</td>
+		<td align="left">
+		{{foreach $event.teacher as $teacher}}
+		{{imageUrl($teacher,1,30)}}&nbsp;{{teacherName($teacher)}}
+		{{/foreach}}
+		</td>
+		<td align="center">{{$event.classes}}</td>
+		<td align="center">		
+			<a href="{{if $_GET.event}}javascript:doedit('{{$event.id}}'){{else}}/school/event/edit?id={{$event.id}}{{/if}}">[修改]</a>
+			{{$whole = -1}}
+			{{if $event.start_date > $nowTime}}	
+			{{$whole = 1}}
+			{{elseif $event.end_date < $nowTime}}
+			{{$whole = 1}}
+			{{/if}}	
+			<a href="javascript:{{if $event.is_loop}}select_delete('{{$event.id}}','{{$event.text}}',{{$whole}}){{else}}{{if $_GET.event}}if(confirm('是否删除?')){dodelete('{{$event.id}}')}{{else}}confirmurl('/school/event/delete?id={{$event.id}}', '是否删除?'){{/if}}{{/if}}">[删除]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan={{if $childEvent}}8{{else}}7{{/if}}>暂无课程数据</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+{{if $childEvent}}
+<input name="param" type="hidden" value="event={{$_GET.event}}&start_date={{$_GET.start_date}}&end_date={{$_GET.end_date}}&hour={{$_GET.hour}}&teacher={{$_GET.teacher}}">
+<input name="pid" type="hidden" value="{{$_GET.event}}" id="pid">
+<input name="doedit" type="submit" value="批量修改" class="button" onclick="pedit();">
+<input name="dodelete" type="submit" value="批量删除" class="button" onclick="document.myform.action='/school/event/pdelete'">
+{{/if}}
+</form>
+</div>
+<script language="JavaScript">
+<!--
+function childEvent(id,name){
+	window.top.art.dialog({
+		id:'childEvent',
+		iframe:'/school/event/index?event='+id+'&start_date={{$_GET.start_date}}&end_date={{$_GET.end_date}}&hour={{$_GET.hour}}&teacher={{$_GET.teacher}}', 
+		title:name, 
+		width:'800', 
+		height:'420', 
+		lock:true
+	});
+}
+function select_delete(id,name,whole){
+	var url = "/school/event/delete?id="+id;
+	if(whole == -1){
+		var tip = "<button class=\"button aui_state_highlight\" onclick=\"window.top.art.dialog({id:'changeDelEvent'}).close();window.top.document.getElementById('rightMain').contentWindow.location.href='"+url+"&whole=1'\">整个课程</button>&nbsp;&nbsp;<button class=\"button aui_state_highlight\" onclick=\"window.top.art.dialog({id:'changeDelEvent'}).close();window.top.document.getElementById('rightMain').contentWindow.location.href='"+url+"&whole=0'\">未上课程</button>";
+	}else if(whole == 0){
+		var tip = "<button class=\"button aui_state_highlight\" onclick=\"window.top.art.dialog({id:'changeDelEvent'}).close();window.top.document.getElementById('rightMain').contentWindow.location.href='"+url+"&whole=0'\">未上课程</button>";
+	}else if(whole == 1){
+		var tip = "<button class=\"button aui_state_highlight\" onclick=\"window.top.art.dialog({id:'changeDelEvent'}).close();window.top.document.getElementById('rightMain').contentWindow.location.href='"+url+"&whole=1'\">整个课程</button>";
+	}else{
+		alert('whole错误');
+		return false;
+	}
+	window.top.art.dialog({
+		id:'changeDelEvent',
+		content:tip, 
+		title:'请选择删除课程类型', 
+		lock:true
+	});
+}
+{{if $_GET.event}}
+function dodelete(id){
+	var i = 0;
+	$("input[name=id[]]").each(function(){
+		var v = $(this).val();
+		if(id == v){
+			$(this).attr("checked",true);
+			i = 1;
+		}else{
+			$(this).attr("checked",false);
+		}
+	});
+	if(i){
+		document.myform.action='/school/event/pdelete';
+		document.myform.dodelete.click();
+	}
+}
+function doedit(id){
+	window.top.right.location = '/school/event/edit?id='+id;
+	window.top.art.dialog({id:'childEvent'}).close();
+}
+function pedit(){
+	var pid = $("#pid").val();
+	var param = 'pid='+pid;
+	$("input[name=id[]]").each(function(){
+		if($(this).attr("checked")){
+			param += '&id[]='+$(this).val();
+		}
+	});
+	window.top.right.location = '/school/event/pedit?'+param
+	window.top.art.dialog({id:'childEvent'}).close();
+	return false;
+}
+{{/if}}
+//-->
+</script>
+{{include "public/footer.html"}}

@@ -1,0 +1,96 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="subnav">
+    <div class="content-menu ib-a link line-x">
+        <a class="add fb" href="javascript:create();"><em>创建学生</em></a>    
+    </div>
+</div>
+<p class="content_tip">注:冻结的学生无法开课，发送通知,问卷</p>
+<form method="get" action="" name="searchform">
+	<table width="100%" cellspacing="0" class="search-form">
+	    <tbody>
+			<tr>
+			<td>
+			<div class="explain-col">
+			<input type="text" name="studentName" class="input-text ufocus" id="studentName" value="{{$_GET.studentName}}" def="学生名">
+			<input type="text" name="gradeName" class="input-text ufocus" id="gradeName" value="{{$_GET.gradeName}}" def="班级名">
+			{{Html::selectStatus($_GET.status, 'status', 'status','状态')}}
+			<input type="submit" value="搜索" class="button search" name="search">
+			</td>
+			</tr>
+	    </tbody>
+	</table>
+</form>
+
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">学生名</th>
+			<th align="left">类型</th>
+			<th align="left">所在班级</th>
+			<th align="left">加入时间</th>
+			<th align="left">状态</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $students as $student}}
+    <tr>
+		<td align="left">{{imageUrl($student.student,2,30)}}&nbsp;<a href="javascript:studentInfo({{$student.student}},'{{$student.name}}')" class="link">{{$student.name}}</a></td>
+		<td align="left">{{if $student.source ==0}}机构添加{{elseif $student.source ==1}}学生申请{{elseif $student.source ==2}}机构创建{{/if}}</td>
+		<td align="left">{{$student.gradeNames}}</td>
+		<td align="left">{{$student.create_time|date_format:'%Y-%m-%d %H:%M:%S'}}</td>
+		<td align="left">{{if $student.status == 2}}<a class="red" href="/school/student/freeze?student={{$student.student}}">冻结</a>{{elseif $student.status == 1}}删除{{elseif $student.status == 0}}<a class="link" href="/school/student/freeze?student={{$student.student}}">正常</a>{{/if}}</td>
+		<td align="center">	
+			{{if $student.status != 1}}
+			<a href="javascript:grade({{$student.student}},'{{$student.name}}')">[分班]</a>
+			<a href="javascript:confirmurl('/school/student/delete?student={{$student.student}}', '是否删除?')">[删除]</a>
+			{{/if}}
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=6>暂无学生</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+function create(){
+	window.top.art.dialog({
+		id:'create',
+		iframe:'/school/student/create', 
+		title:'创建学生', 
+		width:'580', 
+		height:'220',
+		lock:true
+	});
+}
+function showStudent(gradeName){
+	location.href="/school/student/index?gradeName="+gradeName;
+}
+function grade(student,name){
+	window.top.art.dialog({
+		id:'grade',
+		iframe:'/school/student/grade?student='+student, 
+		title:'学生分班《'+name+'》', 
+		width:'700', 
+		height:'500', 
+		lock:true
+	}, function(){
+		var d = window.top.art.dialog({
+			id:'grade'
+		}).data.iframe;
+		var form = d.document.getElementById('dosubmit');
+		form.click();
+		return false;
+	}, function(){
+		window.top.art.dialog({id:'grade'}).close();
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

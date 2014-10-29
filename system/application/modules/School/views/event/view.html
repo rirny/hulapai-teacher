@@ -1,0 +1,119 @@
+{{include "public/header.html"}}
+<script type="text/javascript">
+window.hulapai = new Array();
+window.hulapai.module = 'school';
+window.hulapai.urlEvent = "/school/event/index?is_view=1&course={{$course}}&teacher={{$teacher}}&text={{$text}}";
+window.hulapai.urlEventEdit = "/school/event/edit";
+window.hulapai.urlComment = "/school/comment/index";
+window.hulapai.urlAttendance = "/school/attendance/index";
+window.hulapai.start_date = "{{$_GET.start_date}}";
+window.hulapai.end_date = "{{$_GET.end_date}}";
+</script>
+<script src="{{$path.js}}schedule/dhtmlxscheduler.js" type="text/javascript" charset="utf-8"></script>
+
+<script src="{{$path.js}}schedule/ext/dhtmlxscheduler_minical.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/ext/dhtmlxscheduler_dhx_terrace.js" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="{{$path.js}}schedule/dhtmlxscheduler_dhx_terrace.css" type="text/css" title="no title" charset="utf-8">
+<script src="{{$path.js}}schedule/ext/dhtmlxscheduler_year_view.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/ext/dhtmlxscheduler_readonly.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/locale_cn.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/schedule.color.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/schedule.selector.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{$path.js}}schedule/schedule.init.js" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="{{$path.js}}schedule/schedule.init.css" type="text/css" title="no title" charset="utf-8">
+
+<style type="text/css">
+	html, body{
+		margin:0px;
+		padding:0px;
+		height:100%;
+		overflow:hidden;
+	}	
+	.dhx_cal_event_line.custom, .dhx_cal_event.custom div{
+		background-color:#fd7;
+		border-color:#da6;
+		color:#444;
+	}
+</style>
+<script type="text/javascript">
+	var teachers = {{$teachers|default:[]}};// // 初始老师	
+	var students ={{$students|default:[]}};// 初始学生
+	function init() {		
+		var sch = document.getElementById("scheduler_here");
+		sch.style.height = parseInt(document.body.offsetHeight)+"px";	
+		scheduler.customer();
+	}
+	$(document).ready(function(){	
+		$(".dhx_cal_tab[name='add_tab']").click(function(e){
+			scheduler.addEventNow(null, null, e);
+		});	
+		init();	
+	});
+	function print(v)
+	{
+		if (typeof v == 'object')
+		{
+			v = Obj(v);
+		}else{
+			v = v + " " + (typeof v);
+		}
+		document.write(v);
+	}
+
+function Obj(obj)
+{
+	var result = '';
+	for (i in obj)
+	{		
+		result += i + "\t" + obj[i] + "\t" + typeof(obj[i]) + "\n";
+	}
+	return result;
+}
+function checkSearch(){
+	if(!window.hulapai.start_date || !window.hulapai.end_date) return false;
+	$("#start_date").val(window.hulapai.start_date);
+	$("#end_date").val(window.hulapai.end_date);
+	return true;
+}
+</script>
+<div class="pad-lr-10">
+	<div style="margin: 5px 0 0 0;position: relative;">
+		<form method="get" action="" name="searchform" id="searchform" onsubmit="return checkSearch();">
+		<table width="100%" cellspacing="0" class="search-form">
+		    <tbody>
+				<tr>
+				<td>
+				<div class="explain-col">
+				{{Html::select($schoolCourses,$_GET.course, 'course', 'course','授课内容')}}
+				<input type="text" name="text" class="input-text ufocus" id="text" value="{{$_GET.text}}" def="课程名称">
+				{{Html::select($teachers,$_GET.teacher, 'teacher', 'teacher','全部老师')}}
+				<input type="hidden" name="start_date" id="start_date" value=""/>
+				<input type="hidden" name="end_date" id="end_date" value=""/>
+				<input type="submit" value="搜索" class="button search" name="search" id="search">
+			</div>
+				</td>
+				</tr>
+		    </tbody>
+		</table>
+		</form>
+	</div>
+	<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:100%;'>
+		
+		<div class="dhx_cal_navline">
+			<div class="dhx_cal_prev_button">&nbsp;</div>
+			<div class="dhx_cal_next_button">&nbsp;</div>
+			<div class="dhx_cal_today_button"></div>
+			<div class="dhx_cal_date"></div>
+			<div class="dhx_cal_tab" name="day_tab" style="right:204px;"></div>
+			<div class="dhx_cal_tab" name="week_tab" style="right:140px;"></div>			
+			<div class="dhx_cal_tab" name="month_tab" style="right:76px;"></div>
+			<div class="dhx_cal_tab" name="year_tab" style="right:76px;"></div>
+			<!-- <div class="dhx_cal_tab" name="add_tab" style="right:380px;" >添加</div> -->
+		</div>
+		<div class="dhx_cal_header">
+		</div>
+		<div class="dhx_cal_data">
+		</div>		
+	</div>
+</div>
+{{include "public/footer.html"}}

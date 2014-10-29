@@ -1,0 +1,69 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="subnav">
+    <div class="content-menu ib-a link line-x">
+        <a class="add fb" href="javascript:add();"><em>添加组</em></a>   
+    </div>
+</div>
+<p class="content_tip">注:管理员分配管理员组后,拥有该管理员组的所有权限</p>
+<div class="table-list">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left">序号</th>
+			<th>用户组名</th>
+			<th>操作</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $groups as $k=>$group}}
+    <tr>
+		<td align="left">{{$k+1}}</td>
+		<td align="center">{{$group.name}}</td>
+		<td align="center">
+			<a href="javascript:enable({{$group.gid}},'{{$group.name}}')">[权限设置]</a> | 
+			<a href="javascript:edit({{$group.gid}}, '{{$group.name}}')">[修改]</a> | 		
+			<a href="javascript:confirmurl('/school/user_group/delete?gid={{$group.gid}}', '是否删除?')">[删除]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=3>暂无用户组</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+</div>
+<div id="pages">{{$pages}}</div>
+</div>
+<script language="JavaScript">
+<!--
+function add(){
+	window.top.art.dialog({
+		id:'add',
+		iframe:'/school/user_group/add', 
+		title:'添加组', 
+		width:'500', 
+		height:'130', 
+		lock:true
+	});
+}
+function edit(gid, name) {
+	window.top.art.dialog({
+		title:'修改组《'+name+'》',
+		id:'edit',
+		iframe:'/school/user_group/edit?gid='+gid,
+		width:'500',
+		height:'130'
+	});
+}
+function enable(gid, name) {
+	window.top.art.dialog({
+		title:'权限设置《'+name+'》',
+		id:'enable',
+		iframe:'/school/user_group/enable?gid='+gid,
+		width:'700',
+		height:'500'
+	});
+}
+//-->
+</script>
+{{include "public/footer.html"}}

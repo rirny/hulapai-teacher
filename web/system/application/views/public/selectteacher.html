@@ -1,0 +1,390 @@
+{{include "public/header_right.html"}}
+<style type="text/css">
+<!--
+.search-form {float: left;margin-bottom: 10px;width: 300px;}
+.teacherbg,.checkbg{ background:#ccc;}
+.check_true,.check_false{cursor: pointer;color: #333333;}
+#select_all{float: left;height: 30px;line-height: 30px;}
+#teachername,#groupname{width:200px;height: 30px;line-height: 30px;}
+#select_group_area,#select_teacher_area,#selected_teacher_area{float: left;width: 100%;}
+#select_group_area #select_group{clear: both;width: 100%;border-bottom: 1px solid #CCCCCC; height：45px;float: left;}
+#select_group_area #select_group li{float:left; width: 100px;height:30px;line-height:30px;cursor: pointer;margin:0 2px;overflow:hidden;color: #333333;}
+#select_teacher_area .teacher_ul{clear: both;width: 100%;height：45px;padding: 0 10px;}
+#select_teacher_area .select_teacher{float: left;height: 25px;width: 100%; line-height: 25px;border-bottom: 1px solid #CCCCCC; }
+#select_teacher_area .teacher_ul li{float:left; width: 100px;cursor: pointer; margin: 5px;height: 30px;position: relative;}
+#select_teacher_area .teacher_ul li p{float: left;height: 30px;line-height: 30px;width: 100px;position: absolute;top: 0;left:0;}
+{{if $priv}}
+#select_teacher_area .teacher_ul li p{text-align:center;}
+{{else}}
+#select_teacher_area .teacher_ul li p{left:20px;width: 80px;}
+{{/if}}
+#select_teacher_area .teacher_ul li input{float: left;height: 30px;line-height: 30px;width:15px;position: absolute;top: 0;left:0;}
+#selected_teacher_area .selected_teacher,#selected_teacher_area .selected_teacher_desc{float: left;height: 25px;width: 100%; line-height: 25px;}
+#selected_teacher_area #selected_teacher{float:left;width:100%;padding: 0 10px;border-bottom: 1px solid #CCCCCC;}
+#selected_teacher_area #selected_teacher li{float:left; width: 100px;height:30px;line-height:30px;border:1px solid #CCCCCC;cursor: pointer;margin:5px;}
+#selected_teacher_area #selected_teacher li p{ width:80px;float:left;text-align: center; color: #999999;}
+#selected_teacher_area #selected_teacher li input{float:left;height:30px;line-height:30px;}
+#selected_teacher_area #selected_teacher li .selected_del{ width: 10px;height:10px;margin: 10px 0;background: url("{{$path.images}}hulapai/delete_icon.png") no-repeat;} 
+-->
+</style>
+<div class="pad_common">
+<table width="100%" cellspacing="0" class="search-form">
+    <tbody>
+		<tr>
+			<td>
+				<div class="">
+					<input type="text" name="teachername"  class="input-text ufocus" id="teachername" value="" def="老师名/呼啦号/用户号">
+					<input type="submit" value="搜索" class="button search" name="search" id="searchTeacher">
+				</div>
+			</td>
+		</tr>
+    </tbody>
+</table>
+<table width="100%" cellspacing="0" class="search-form">
+    <tbody>
+		<tr>
+			<td>
+				<div class="">
+					<input type="text" name="groupname"  class="input-text ufocus" id="groupname" value="" def="教师组名">
+					<input type="submit" value="搜索" class="button search" name="search" id="searchGroup">
+				</div>
+				
+			</td>
+		</tr>
+    </tbody>
+</table>
+<div id="select_group_area">
+	<ul id="select_group">
+	</ul>
+</div>
+<div id="select_teacher_area">
+	{{if !$priv}}
+	<p id="select_all">选择老师：<span class="check_true">[全选]</span>/<span class="check_false">[取消]</span></p>
+	{{/if}}
+</div>
+<div id="selected_teacher_area">
+<p class="selected_teacher">已选择老师：</p>
+<form name="myform" action="/public/selectTeacher?school={{$school}}&event={{$event}}&priv={{$priv}}&groupEdit={{$groupEdit}}" method="post" id="myform">
+<ul id="selected_teacher">
+</ul>
+<p class="selected_teacher_desc">一共选择了<cite id="selectNum">0</cite>位老师</p>
+<input name="dosubmit" type="submit" id="dosubmit" value="确定" class="dialog">
+</form>
+</div>
+</div>
+<ul id="teacher_priv" style="display:none;">
+	<li id="teacher_priv_teacher" style="margin:10px 0;"></li>
+	<li>
+		<input type="checkbox" value="1" id="priv_1" checked=checked name="priv[]"> 上课
+		<input type="checkbox" value="4" id="priv_3" name="priv[]"> 点评
+		<input type="checkbox" value="2" id="priv_2" name="priv[]"> 考勤
+		<input type="checkbox" value="8" id="priv_4" name="priv[]"> 通知
+	</li>
+</ul>
+<script type="text/javascript"> 
+//type 0 全部 1 nickname  2 hulaid 3 account 4 group
+var teachers = {{$teachersArr}};
+var selectedTeachers = {{$selectedTeachersArr}};
+function teacheraction(){
+	$(".teacher_ul li").bind('click',function(){
+		{{if $priv}}
+		var teacher = $(this).attr("teacher");
+		var name = $(this).children('p').html();
+		var priv = selectedTeachers[teacher] ? selectedTeachers[teacher] : 7;
+		$("#teacher_priv_teacher").html($(this).html());
+		$("input[name=priv[]]").each(function(){
+			if(priv & parseInt($(this).val())){
+				$(this).attr('checked',true);
+			}else{
+				$(this).attr('checked',false);
+			}
+		});
+		var that = this;
+		var privDom = $('#teacher_priv')[0];
+		if ($.browser.msie && $.browser.version == "6.0") {
+			privDom = privDom.innerHTML
+		} 
+		window.top.art.dialog({
+			id:'priv',
+			content:privDom, 
+			title:"选择老师", 
+			width:"350", 
+			height:"100",
+			lock:true
+		}, function(){
+			var d = window.top.document;
+			var priv = 0;
+			if(d.getElementById('priv_1').checked){
+				priv += parseInt(d.getElementById('priv_1').value);
+			}
+			if(d.getElementById('priv_2').checked){
+				priv += parseInt(d.getElementById('priv_2').value);
+			}
+			if(d.getElementById('priv_3').checked){
+				priv += parseInt(d.getElementById('priv_3').value);
+			}
+			if(d.getElementById('priv_4').checked){
+				priv += parseInt(d.getElementById('priv_4').value);
+			}
+			selectedTeachers[teacher] = priv;
+			var p = window.top.art.dialog({
+				id:'teacher'
+			}).data.iframe;
+			var s = $(p.document.getElementById('selected_teacher'));
+			if(s.children('.teacher_'+teacher).length > 0){
+				s.children('.teacher_'+teacher).children('.teacher_op_'+teacher).val(priv);
+			}else{
+				s.append($('<li class="teacher_'+teacher+'" teacher='+teacher+'><p>'+name+'</p><input type="hidden" value="'+priv+'" class="teacher_op_'+teacher+'" name="teacher_op['+teacher+']"><p class="selected_del"></p></li>'));
+			}
+			$(that).addClass('teacherbg');
+			selectedteacheraction();
+			deleteTeactionaction();
+			window.top.art.dialog({id:'priv'}).close();
+			return false;
+		});
+		{{/if}}
+	});
+}
+
+function selectedteacheraction(){
+	$("#selected_teacher li").bind('click',function(){
+		var teacher = $(this).attr("teacher");
+		$(".teacher_ul li[teacher="+teacher+"]").click();
+	});
+}
+
+function checkEvent(){
+	if ($.browser.msie) {
+		$('input[name=check_teacher[]]').click(function(){
+			this.blur();
+			this.focus();
+		})
+	}
+	$('input[name=check_teacher[]]').change(function() {
+		checkedAction(this);
+	}); 
+}
+function checkedAction(event){
+	var teacher = $(event).parent("li").attr("teacher");
+	var name = $(event).parent("li").children('p').html();
+	var priv = selectedTeachers[teacher] ? selectedTeachers[teacher] : 7;
+	var s = $("#selected_teacher").children('.teacher_'+teacher);
+	if($(event).attr("checked")){
+		if(s.length == 0){
+			$("#selected_teacher").append($('<li class="teacher_'+teacher+'" teacher='+teacher+'><p>'+name+'</p><input type="hidden" value="'+priv+'" class="teacher_op_'+teacher+'" name="teacher_op['+teacher+']"><p class="selected_del"></p></li>'));
+		}
+	}else{
+		if(s.length > 0){
+			s.remove();
+		}
+	}
+	deleteTeactionaction();
+}
+
+function deleteTeactionaction(){
+	$(".selected_del").bind('click',function(){
+		var p = $(this).parent();
+		var c = p.attr("class").split('teacher_');
+		var teacher = c[1];
+		$(".teacher_ul li[teacher="+teacher+"]").children('input').attr("checked",false);
+		{{if $priv}}
+		$(".teacher_ul li[teacher="+teacher+"]").removeClass('teacherbg');
+		{{/if}}
+		p.remove();
+		$("#selectNum").text($(".selected_del").length);
+	});
+	$("#selectNum").text($(".selected_del").length);
+}
+
+var found = '';
+if(typeof(teachers) === 'object'){ 
+	for(var i in teachers){ 
+		found += '<div class="select_teacher">'+i+'：';
+		{{if !$priv}}
+		found += '<span class="check_true">[全选]</span>/<span class="check_false">[取消]</span>';
+		{{/if}}
+		found += '</div><ul class="teacher_ul">';
+		for(var j in teachers[i]){ 
+			
+			found +=  '<li class="teacher';
+			{{if $priv}}
+				if(selectedTeachers[teachers[i][j]['teacher']]){
+					found +=  ' teacherbg';
+				}
+			{{/if}}
+			found +=  '" teacher='+teachers[i][j]['teacher']+'>';
+			{{if !$priv}}
+			
+			found +=  '<input class="check_teacher" type="checkbox" value="'+teachers[i][j]['teacher']+'" name="check_teacher[]"';
+			if(selectedTeachers[teachers[i][j]['teacher']]) found += ' checked=checked';
+			found += ' >';
+			{{/if}}
+			if(teachers[i][j]['firstname'] || teachers[i][j]['lastname']){
+				found +=  '&nbsp;<p>'+teachers[i][j]['firstname']+teachers[i][j]['lastname']+'</p>'; 
+			}else{
+				found +=  '&nbsp;<p>无名老师</p>'; 
+			}
+			if(selectedTeachers[teachers[i][j]['teacher']]){
+				$("#selected_teacher").append($('<li class="teacher_'+teachers[i][j]['teacher']+'" teacher='+teachers[i][j]['teacher']+'><p>'+teachers[i][j]['firstname']+teachers[i][j]['lastname']+'</p><input type="hidden" value="'+selectedTeachers[teachers[i][j]['teacher']]+'" class="teacher_op_'+teachers[i][j]['teacher']+'" name="teacher_op['+teachers[i][j]['teacher']+']"><p class="selected_del""></p></li>'));
+			}
+			found +=  '</li>';
+		}
+		found +=  '</ul>';
+	}
+}
+$("#select_teacher_area .select_teacher").remove();
+$("#select_teacher_area .teacher_ul").remove();
+$("#select_teacher_area").append(found);
+teacheraction();
+selectedteacheraction();
+checkEvent();
+deleteTeactionaction();
+
+
+function search_teacher(find,type,isreturn){ 
+	var num = 0;
+	if(((!find || find=="老师名/呼啦号/用户号") && type!=4) || (!find && type==4)){
+		$('.teacher_ul li.teacher').show();
+	}else if(find && typeof(teachers) ==='object'){
+		$('.teacher_ul li.teacher').hide();
+		for(var i in teachers){ 
+			for(j in teachers[i]){
+				if(type == 4){
+					for(var jj in teachers[i][j]['group']){ 
+						if(teachers[i][j]['group'][jj] == find){
+							if(isreturn){
+								num++;
+							}else{
+								$('.teacher[teacher='+teachers[i][j]['teacher']+']').show();
+							}
+						}
+					}
+				}else if(type == 1){ 
+					var name = teachers[i][j]['firstname']+teachers[i][j]['lastname'];
+					if(name.indexOf(find) >= 0){
+						if(isreturn){
+							num++;
+						}else{
+							$('.teacher[teacher='+teachers[i][j]['teacher']+']').show();
+						}
+					}
+				}else if(type == 2){ 
+					if(teachers[i][j]['hulaid'] == find){
+						if(isreturn){
+							num++;
+						}else{
+							$('.teacher[teacher='+teachers[i][j]['teacher']+']').show();
+						}
+					}
+				}else if(type == 3){ 
+					if(teachers[i][j]['account'] == find){
+						if(isreturn){
+							num++;
+						}else{
+							$('.teacher[teacher='+teachers[i][j]['teacher']+']').show();
+						}
+					}
+				}
+			}
+		}
+	} 
+	if(isreturn){
+		return num;
+	}
+} 
+$("#select_all .check_true").click(function(){
+	var teacherNum = 0;
+	$('input[name=check_teacher[]]').each(function(){
+		var hidden = $(this).is(":hidden");
+		if(!hidden) teacherNum += 1;
+	})
+	if(teacherNum > 100){
+		alert('选择老师超过100，请分次选择!');
+		return false;
+	}
+	$('input[name=check_teacher[]]').each(function(){
+		var hidden = $(this).is(":hidden");
+		if(!hidden)  $(this).attr("checked",true);
+		checkedAction(this);
+	})
+	$("#select_all .check_true").addClass('checkbg');
+	$("#select_all .check_false").removeClass('checkbg');
+});
+$("#select_all .check_false").click(function(){
+	$('input[name=check_teacher[]]').each(function(){
+		var hidden = $(this).is(":hidden");
+		if(!hidden)  $(this).attr("checked",false);
+		checkedAction(this);
+	})
+	$("#select_all .check_false").addClass('checkbg');
+	$("#select_all .check_true").removeClass('checkbg');
+});
+
+$(".select_teacher .check_true").click(function(){
+	var teacher_ul = $(this).parent(".select_teacher").next(".teacher_ul");
+	var teacherNum = 0;
+	teacher_ul.find('input').each(function(){
+		var hidden = $(this).is(":hidden");
+		if(!hidden) teacherNum += 1;
+	})
+	if(teacherNum > 100){
+		alert('选择老师超过100，请分次选择!');
+		return false;
+	}
+	teacher_ul.find('input').each(function(){
+		var hidden = $(this).is(":hidden");
+		if(!hidden)  $(this).attr("checked",true);
+		checkedAction(this);
+	})
+	$(this).parent('.select_teacher').children('.check_true').addClass('checkbg');
+	$(this).parent('.select_teacher').children('.check_false').removeClass('checkbg');
+});
+$(".select_teacher .check_false").click(function(){
+	var teacher_ul = $(this).parent(".select_teacher").next(".teacher_ul");
+	teacher_ul.find('input').each(function(){
+		var hidden = $(this).is(":hidden");
+		if(!hidden)  $(this).attr("checked",false);
+		checkedAction(this);
+	})
+	$(this).parent('.select_teacher').children('.check_false').addClass('checkbg');
+	$(this).parent('.select_teacher').children('.check_true').removeClass('checkbg');
+});
+
+$("#searchTeacher").click(function(){
+	var find = $("#teachername").val();
+	if(search_teacher(find,1,1)){
+		search_teacher(find,1);
+	}else if(search_teacher(find,2,1)){
+		search_teacher(find,2);
+	}else{
+		search_teacher(find,3);
+	}
+});
+
+$("#searchGroup").click(function(){
+	var groupname = $("#groupname").val();
+	if(!groupname || groupname=="教师组名"){
+		$("#select_group").html("");
+		search_teacher(0,4);
+		return false;
+	}else{
+		$.get("/public/getSchoolGroup?school="+{{$school}}+"&name="+groupname,function(data){
+			if(data == 0){
+				alert("没有相关教师组");
+			}else{
+				data = jQuery.parseJSON(data);
+				var found = "<li group=''>所有教师</li>";
+				$.each(data,function(i,n){
+					found +="<li group='"+n.id+"' title='"+n.name+"'>"+n.name+"</li>";
+				});
+				$("#select_group").html(found);
+				$("#select_group li").bind('click',function(){
+					var find = $(this).attr('group');
+					search_teacher(find,4);
+				});
+			}
+		});
+	}
+});
+</script>
+{{include "public/footer_right.html"}}

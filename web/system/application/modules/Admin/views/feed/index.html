@@ -1,0 +1,41 @@
+{{include "public/header.html"}}
+<div class="subnav">
+    <div class="content-menu ib-a blue line-x"> 
+        <a class="on" href="javascript:;"><em>动态列表</em></a><span>|</span>
+        <a href="{{url('admin','feed','add')}}"><em>发布官方动态</em></a>  
+    </div>
+</div>
+<div class="pad-lr-10">
+<div class="table-list">
+<form name="myform" action="/admin/feed/delete" method="post" id="myform">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left"><input type="checkbox" value="" name="checkAll" class="checkAll" rel="id[]"/></th>
+			<th align="left">内容</th>
+			<th width="10%">发布时间</th>
+			<th width="10%"></th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $feeds.data as $k=>$feed}}
+    <tr>	
+    	<td align="left"><input type="checkbox" value="{{$feed.feed_id}}" name="id[]"/></td>	
+		<td align="left">{{$feed.content}}</td>	
+		<td align="center">{{$feed.publish_time|date_format:"%Y-%m-%d %H:%M"}}</td>
+		<td align="center">			
+			<a href="javascript:confirmurl('/admin/feed/delete?id={{$feed.feed_id}}', '是否删除?')">[删除]</a>
+		</td>
+    </tr>
+{{foreachelse}}
+	<tr><td>暂无数据！</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+    <div class="bk15"></div>
+    <input name="dosubmit" type="submit" value="删除" class="button">
+</form>
+<div id="pages">{{$pages}}</div>
+</div>
+</div>
+{{include "public/footer.html"}}

@@ -1,0 +1,36 @@
+{{include "public/header.html"}}
+<div class="pad_common">
+<div class="subnav">
+
+</div>
+<div class="table-list">
+<form name="myform" action="/school/suggest/delete" method="post" id="myform">
+<table width="100%" cellspacing="0">
+	<thead>
+		<tr>
+			<th align="left"><input type="checkbox" value="" name="checkAll" class="checkAll" rel="id[]"/></th>
+			<th align="left">发送人</th>
+			<th align="left">发送时间</th>
+			<th align="left">内容</th>
+		</tr>
+	</thead>
+<tbody>
+{{foreach $suggests as $suggest}}
+    <tr>
+		<td align="left"><input type="checkbox" value="{{$suggest.id}}" name="id[]"/></td>
+		<td align="left">{{if $suggest.anonymous}}【匿名】{{else}}{{if !$suggest.student}}{{teacherName($suggest.from)}}(老师){{else}}{{studentName($suggest.student)}}{{relation($suggest.from,$suggest.student)}}{{/if}}{{/if}}</td>
+		<td align="left">{{$suggest.create_time}}</td>
+		<td align="left" title="{{$suggest.content}}">{{$suggest.content|truncate:30:"...":true}}</td>
+    </tr>
+{{foreachelse}}
+<tr><td colspan=4>暂无反馈信息</td></tr>
+{{/foreach}}
+</tbody>
+</table>
+    <div class="bk15"></div>
+    <input name="dosubmit" type="submit" value="删除" class="button">
+</form>
+<div id="pages">{{$pages}}</div>
+</div>
+</div>
+{{include "public/footer.html"}}
